@@ -1,6 +1,7 @@
-module Core.Game (Dices, gameStateBase, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame) where
+module Core.Game (Dices, newGameState, game, initializeDices, initializeHumanPlayer, initializeBotPlayer) where
 
 import Core.Dice (Dice)
+import Core.Players.Player (Player(..), PlayerType)
 import Core.Players.HumanPlayer (HumanPlayer(..))
 import Core.Players.BotPlayer (BotPlayer(..), BotLevel(..))
 import Auxiliaries.Random (randomInt, randomInts)
@@ -13,13 +14,23 @@ type Dices = [Dice]
 data GameState = GameState
   { humanPlayer :: HumanPlayer,
     botPlayer :: BotPlayer,
-    dices :: Dices
+    dices :: Dices, 
+    nextPlayer :: PlayerType
   } deriving (Show)
 
-gameStateBase :: GameState
-gameStateBase = GameState
-  { humanPlayer = HumanPlayer "Player1", botPlayer = BotPlayer "Bot1" Easy, dices = []
-  }
+newGameState :: HumanPlayer -> BotPlayer -> Dices -> PlayerType -> GameState
+newGameState humanPlayer botPlayer dices nextPlayer = GameState
+    { humanPlayer = humanPlayer
+    , botPlayer = botPlayer
+    , dices = dices 
+    , nextPlayer = nextPlayer
+    }
+
+updateGameState :: GameState -> Dices -> GameState
+updateGameState gameState newDices = gameState { dices = newDices }
+
+isGameOver :: GameState -> Bool
+isGameOver gameState = null (dices gameState)
 
 type GameMonad a = StateT GameState IO a
 
@@ -40,11 +51,6 @@ initializeBotPlayer :: String -> BotLevel -> IO BotPlayer
 initializeBotPlayer nameBotPlayer levelBotPlayer = do
   let bot = BotPlayer { botName = nameBotPlayer, botLevel =  levelBotPlayer}
   return bot
-
-initializeGame :: HumanPlayer -> BotPlayer -> Dices -> GameMonad ()
-initializeGame human bot dices = do
-  let initialState = GameState human bot dices
-  put initialState
 
 game :: IO ()
 game = do

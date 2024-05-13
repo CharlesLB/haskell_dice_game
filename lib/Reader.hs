@@ -1,7 +1,7 @@
 module Lib.Reader (initializingGame) where
 
-import Core.Game (Dices, gameStateBase, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame)
-import Core.Players.Player (Player(..))
+import Core.Game (Dices, newGameState, game, initializeDices, initializeHumanPlayer, initializeBotPlayer)
+import Core.Players.Player (Player(..), PlayerType(..))
 import Core.Players.HumanPlayer (HumanPlayer(..)) 
 import Core.Players.BotPlayer (BotPlayer(..), BotPlayer(..))
 import Auxiliaries.ReaderLevelBot (getUserBotLevel) 
@@ -43,7 +43,7 @@ initializingGame = do
   human <- initializingHumanPlayer
   bot <- initializingBotPlayer
 
-  let gameStateInitial = initializeGame human bot dices
-  runStateT gameStateInitial gameStateBase
-  
+  let initialState = newGameState human bot dices Human
+  -- playGame initialState humanMove easyComputerMove
+
   return ()  -- Conclui a ação IO ()
