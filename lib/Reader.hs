@@ -1,37 +1,16 @@
 module Lib.Reader (initializingDices, initializingPlayers) where
 
-import Core.Game (initializeGame, game)
-import Core.Players.Player (Player(..), initializeHumanPlayer, initializeBotPlayer)
-import Core.Players.BotPlayer (BotPlayer(..), BotLevel(..))
-
-import Data.Char (toLower)
+import Core.Game (initializeDices, initializeHumanPlayer, initializeBotPlayer, game)
+import Core.Players.Player (Player(..))
+import Core.Players.BotPlayer (BotPlayer(..))
+import Auxiliaries.ReaderLevelBot (getUserBotLevel) 
 
 initializingDices :: IO ()
 initializingDices = do 
   putStrLn "Quantos dados deseja jogar? "
   numDice <- readLn
-  dices <- initializeGame numDice
+  dices <- initializeDices numDice
   putStrLn $ "Configuração inicial dos dados: " ++ show dices
-
-displayBotLevels :: IO ()
-displayBotLevels = do
-  putStrLn "Escolha o nível do bot:"
-  putStrLn "1. Fácil"
-  putStrLn "2. Médio"
-  putStrLn "3. Difícil"
-
-getUserBotLevel :: IO BotLevel
-getUserBotLevel = do
-  displayBotLevels
-  putStrLn "Digite o número correspondente ao nível desejado:"
-  choice <- getLine
-  case map toLower choice of
-    "1" -> return Easy
-    "2" -> return Medium
-    "3" -> return Hard
-    _   -> do
-      putStrLn "Opção inválida. Por favor, escolha uma opção válida (1, 2 ou 3)."
-      getUserBotLevel
 
 initializingPlayers :: IO ()
 initializingPlayers = do

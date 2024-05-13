@@ -4,7 +4,6 @@ data BotLevel = Easy | Medium | Hard
   deriving (Show, Eq)
 
 data BotPlayer = BotPlayer
-  { botName :: String,
-  	botLevel :: BotLevel
+  { botName :: String, botLevel :: BotLevel
   }
   deriving (Show)

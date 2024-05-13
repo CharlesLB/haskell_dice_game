@@ -1,4 +1,4 @@
-module Core.Players.Player (Player(..), initializeHumanPlayer, initializeBotPlayer) where
+module Core.Players.Player (Player(..)) where
 
 import Core.Players.HumanPlayer (HumanPlayer(..))
 import Core.Players.BotPlayer (BotPlayer(..), BotLevel(..))
@@ -22,12 +22,3 @@ instance Player BotPlayer where
   playerType :: BotPlayer -> String
   playerType _ = "Bot"
 
-initializeHumanPlayer :: String -> IO HumanPlayer
-initializeHumanPlayer nameHumanPlayer = do
-  let human = HumanPlayer { humanName = nameHumanPlayer }
-  return human
-
-initializeBotPlayer :: String -> BotLevel -> IO BotPlayer
-initializeBotPlayer nameBotPlayer levelBotPlayer = do
-  let bot = BotPlayer { botName = nameBotPlayer, botLevel =  levelBotPlayer}
-  return bot
