@@ -1,14 +1,15 @@
 module Lib.Reader (initializingGame) where
 
-import Core.Game (Dices, newGameState, game, initializeDices, initializeHumanPlayer, initializeBotPlayer)
+import Core.Game (newGameState, game)
+import Core.Dice (Dice, initializeDices)
 import Core.Players.Player (Player(..), PlayerType(..))
-import Core.Players.HumanPlayer (HumanPlayer(..)) 
-import Core.Players.BotPlayer (BotPlayer(..), BotPlayer(..))
+import Core.Players.HumanPlayer (HumanPlayer(..), initializeHumanPlayer) 
+import Core.Players.BotPlayer (BotPlayer(..), BotPlayer(..), initializeBotPlayer)
 import Auxiliaries.ReaderLevelBot (getUserBotLevel) 
 
 import Control.Monad.State
 
-initializingDices :: IO Dices
+initializingDices :: IO [Dice]
 initializingDices = do 
   putStrLn "Quantos dados deseja jogar? "
   numDice <- readLn
