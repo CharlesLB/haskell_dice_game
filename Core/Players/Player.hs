@@ -1,7 +1,7 @@
 module Core.Players.Player (Player(..), initializeHumanPlayer, initializeBotPlayer) where
 
 import Core.Players.HumanPlayer (HumanPlayer(..))
-import Core.Players.BotPlayer (BotPlayer(..))
+import Core.Players.BotPlayer (BotPlayer(..), BotLevel(..))
 
 class Player a where
   playerName :: a -> String
@@ -27,7 +27,7 @@ initializeHumanPlayer nameHumanPlayer = do
   let human = HumanPlayer { humanName = nameHumanPlayer }
   return human
 
-initializeBotPlayer :: String -> IO BotPlayer
-initializeBotPlayer nameBotPlayer = do
-  let bot = BotPlayer { botName = nameBotPlayer }
+initializeBotPlayer :: String -> BotLevel -> IO BotPlayer
+initializeBotPlayer nameBotPlayer levelBotPlayer = do
+  let bot = BotPlayer { botName = nameBotPlayer, botLevel =  levelBotPlayer}
   return bot
