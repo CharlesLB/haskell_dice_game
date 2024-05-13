@@ -1,14 +1,19 @@
-module Lib.Printer (printGameState) where
+module Lib.Printer (printStateCurrent) where
 
-import Core.Game (GameMonad, GameState(..))
+import Core.Dice (Dice)
+import Core.Players.Player (Player(..))
 
-import Control.Monad.State
-
-printGameState :: GameMonad ()
-printGameState = do
-  currentState <- get  -- Obtém o estado atual
-  liftIO $ do  -- Utiliza liftIO para realizar operações de I/O dentro da monada
+printStateCurrent :: String -> [Dice] -> IO ()
+printStateCurrent currentPlayer dices = do
     putStrLn "Estado atual do jogo:"
-    putStrLn $ "Jogador humano: " ++ show (humanPlayer currentState)
-    putStrLn $ "Jogador bot: " ++ show (botPlayer currentState)
-    putStrLn $ "Dados: " ++ show (dices currentState)
+    putStrLn $ "Jogador atual: " ++ currentPlayer
+    putStrLn "Dados:"
+    printDiceConfiguration (dices)
+
+printDiceConfiguration :: [Dice] -> IO ()
+printDiceConfiguration dices = do
+    putStrLn "Configuração dos Dados:"
+    mapM_ printDice (zip [1..] dices)
+
+printDice :: (Int, Int) -> IO ()
+printDice (index, value) = putStrLn $ "Dado " ++ show index ++ ": " ++ show value
