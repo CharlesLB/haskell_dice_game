@@ -1,6 +1,6 @@
 module Lib.Reader (initializingGame) where
 
-import Core.Game (Dices, initialGameState, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame)
+import Core.Game (Dices, gameStateBase, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame)
 import Core.Players.Player (Player(..))
 import Core.Players.HumanPlayer (HumanPlayer(..)) 
 import Core.Players.BotPlayer (BotPlayer(..), BotPlayer(..))
@@ -43,7 +43,7 @@ initializingGame = do
   human <- initializingHumanPlayer
   bot <- initializingBotPlayer
 
-  let gameMonadAction = initializeGame human bot dices
-  runStateT gameMonadAction initialGameState
+  let gameStateInitial = initializeGame human bot dices
+  runStateT gameStateInitial gameStateBase
   
   return ()  -- Conclui a ação IO ()

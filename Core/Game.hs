@@ -1,4 +1,4 @@
-module Core.Game (Dices, initialGameState, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame) where
+module Core.Game (Dices, gameStateBase, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame) where
 
 import Core.Dice (Dice)
 import Core.Players.HumanPlayer (HumanPlayer(..))
@@ -16,8 +16,8 @@ data GameState = GameState
     dices :: Dices
   } deriving (Show)
 
-initialGameState :: GameState
-initialGameState = GameState
+gameStateBase :: GameState
+gameStateBase = GameState
   { humanPlayer = HumanPlayer "Player1", botPlayer = BotPlayer "Bot1" Easy, dices = []
   }
 
