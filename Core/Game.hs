@@ -1,4 +1,4 @@
-module Core.Game (game, initializeDices, initializeHumanPlayer, initializeBotPlayer) where
+module Core.Game (Dices, initialGameState, game, initializeDices, initializeHumanPlayer, initializeBotPlayer, initializeGame) where
 
 import Core.Dice (Dice)
 import Core.Players.HumanPlayer (HumanPlayer(..))
@@ -7,8 +7,21 @@ import Auxiliaries.Random (randomInt, randomInts)
 
 -- import System.Random
 import Control.Monad (replicateM)
+import Control.Monad.State
 
 type Dices = [Dice]
+data GameState = GameState
+  { humanPlayer :: HumanPlayer,
+    botPlayer :: BotPlayer,
+    dices :: Dices
+  } deriving (Show)
+
+initialGameState :: GameState
+initialGameState = GameState
+  { humanPlayer = HumanPlayer "Player1", botPlayer = BotPlayer "Bot1" Easy, dices = []
+  }
+
+type GameMonad a = StateT GameState IO a
 
 --COMO DEVERIA SER A INICIALIZAÇÃO CASO A IMPORTAÇÃO FUNCIONASSE:
 -- initializeDices :: Int -> IO Dices
@@ -27,6 +40,11 @@ initializeBotPlayer :: String -> BotLevel -> IO BotPlayer
 initializeBotPlayer nameBotPlayer levelBotPlayer = do
   let bot = BotPlayer { botName = nameBotPlayer, botLevel =  levelBotPlayer}
   return bot
+
+initializeGame :: HumanPlayer -> BotPlayer -> Dices -> GameMonad ()
+initializeGame human bot dices = do
+  let initialState = GameState human bot dices
+  put initialState
 
 game :: IO ()
 game = do
