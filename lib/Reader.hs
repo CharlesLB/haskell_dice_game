@@ -1,50 +1,41 @@
-module Lib.Reader (initializingGame) where
+module Lib.Reader (getUserBotLevel, displayPossibleRotations) where
 
-import Core.Game (newGameState, playGame)
-import Core.Dice (Dice, initializeDices)
-import Core.Players.Player (Player(..), PlayerType(..))
-import Core.Players.HumanPlayer (HumanPlayer(..), initializeHumanPlayer) 
-import Core.Players.BotPlayer (BotPlayer(..), BotPlayer(..), initializeBotPlayer)
-import Auxiliaries.ReaderLevelBot (getUserBotLevel) 
+import Core.Players.BotPlayer (BotLevel(..))
+import Core.Dice (Dice(..), possibleRotations)
+import Lib.Printer (printDiceConfiguration)
 
-import Control.Monad.State
+import Data.Char (toLower)
 
-initializingDices :: IO [Dice]
-initializingDices = do 
-  putStrLn "Quantos dados deseja jogar? "
-  numDice <- readLn
-  dices <- initializeDices numDice
-  putStrLn $ "Configuração inicial dos dados: " ++ show dices
+displayBotLevels :: IO ()
+displayBotLevels = do
+  putStrLn "Escolha o nível do bot:"
+  putStrLn "1. Fácil"
+  putStrLn "2. Médio"
+  putStrLn "3. Difícil"
 
-  return dices 
+getUserBotLevel :: IO BotLevel
+getUserBotLevel = do
+  displayBotLevels
+  putStrLn "Digite o número correspondente ao nível desejado:"
+  choice <- getLine
+  case map toLower choice of
+    "1" -> return Easy
+    "2" -> return Medium
+    "3" -> return Hard
+    _   -> do
+      putStrLn "Opção inválida. Por favor, escolha uma opção válida (1, 2 ou 3)."
+      getUserBotLevel
 
-initializingHumanPlayer :: IO HumanPlayer
-initializingHumanPlayer = do
-  putStrLn "Qual o nome do jogador? "
-  nameHumanPlayer <- getLine
-  human <- initializeHumanPlayer nameHumanPlayer 
-
-  putStrLn $ "O nome do jogador do tipo " ++ show (playerType human) ++ " é: " ++ playerName human
-  return human
-
-initializingBotPlayer :: IO BotPlayer
-initializingBotPlayer = do
-  putStrLn "Qual o nome do bot? "
-  nameBotPlayer <- getLine
-  levelBotPlayer <- getUserBotLevel
-  bot <- initializeBotPlayer nameBotPlayer levelBotPlayer
-
-  putStrLn $ "O nome do jogador do tipo " ++ show (playerType bot) ++ " é: " ++ playerName bot ++ ". Ele é do nivel " ++ show (botLevel bot)
-
-  return bot
-
-initializingGame :: IO ()
-initializingGame = do
-  dices <- initializingDices
-  human <- initializingHumanPlayer
-  bot <- initializingBotPlayer
-
-  let initialState = newGameState human bot dices Bot
-  playGame initialState
-
-  return ()  -- Conclui a ação IO ()
+displayPossibleRotations :: Dice -> IO Int
+displayPossibleRotations chosenDice = do 
+ let rotations = possibleRotations chosenDice
+ putStrLn "Possíveis rotações disponíveis:"
+ mapM_ (\(i, option) -> putStrLn $ "- Girar para o valor: " ++ show option) (zip [1..] rotations)
+ 
+ putStrLn "Digite para qual valor o dado deve ser girado:"
+ newValue <- readLn 
+ if any (\x -> x == newValue) rotations
+       then return newValue
+       else do
+           putStrLn "Opção inválida. Escolha uma das opções disponíveis."
+           displayPossibleRotations chosenDice

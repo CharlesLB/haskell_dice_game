@@ -1,13 +1,25 @@
-module Core.Dice (Dice, initializeDices) where
+module Core.Dice (Dice(..), initializeDices, possibleRotations) where
 
-import Auxiliaries.Random (randomInt, randomInts)
+import Lib.Random (randomInts)
 
-type Dice = Int
+data Dice = Dice { value :: Int }
+    deriving (Show)
+
+randomDiceValues :: Int -> [Dice]
+randomDiceValues seed = map (\val -> Dice val) (randomInts seed)
 
 --COMO DEVERIA SER A INICIALIZAÇÃO CASO A IMPORTAÇÃO FUNCIONASSE:
 -- initializeDices :: Int -> IO Dices
 -- initializeDices numDice = replicateM numDice (randomRIO (1, 6))
 initializeDices :: Int -> IO [Dice]
 initializeDices numDice = do
-    let randomDiceValues = take numDice (randomInts 42)
-    return randomDiceValues
+    let randomDiceList = randomDiceValues 42
+        selectedDiceList = take numDice randomDiceList
+    return selectedDiceList
+
+possibleRotations :: Dice -> [Int]
+possibleRotations (Dice currentValue) =
+    filter (\x -> x < currentValue && x + currentValue /= 7) [1..6]
+    
+-- rotateDice :: Int -> ()
+-- rotateDice newValue = value <- newValue
