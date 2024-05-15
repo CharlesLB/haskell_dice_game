@@ -43,11 +43,8 @@ possibleDicesToRemovals diceList =
 
 possibleDicesToRotations :: [Dice] -> [(Int, Int)]
 possibleDicesToRotations diceList =
-    filter (\(_, val) -> val /= 1) indexedDiceList
-  where
-    indexedDiceList = zip validIndices (map value validDiceList)
-    validDiceList = filter (\(Dice val) -> val /= 1) diceList
-    validIndices = [index | (index, dice) <- zip [1..] diceList, value dice /= 1]
+    [(index, value dice) | (index, dice) <- zip [1..] diceList, value dice /= 1]
+
 
 getPlayerMove :: [Dice] -> IO (Int, Int, Int)
 getPlayerMove diceList = do
@@ -69,7 +66,7 @@ getPlayerMove diceList = do
             putStrLn $ "Número de opções disponíveis para girar: " ++ show numOptions
             putStrLn "Escolha o dado para girar:"
             index <- readLn
-            if index >= 1 && index <= length dicesToRotations
+            if any (\(i, option) -> i == index) dicesToRotations
                 then do
                     let chosenDice = diceList !! (index - 1)
                     putStrLn $ "Dado escolhido: " ++ show (value chosenDice)
@@ -85,7 +82,7 @@ getPlayerMove diceList = do
                     mapM_ (\(i, option) -> putStrLn $ "Dado " ++ show i ++ ": " ++ show option) dicesToRemovals
                     putStrLn "Escolha o dado para girar:"
                     index <- readLn
-                    if index >= 1 && index <= length diceList
+                    if any (\(i, option) -> i == index) dicesToRemovals
                         then return (2, index, 0)  -- Escolha 2 indica retirar
                         else do
                             putStrLn "Índice inválido. Tente novamente."
