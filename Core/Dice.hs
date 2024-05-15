@@ -2,6 +2,8 @@ module Core.Dice (Dice(..), initializeDices, possibleRotations) where
 
 import Lib.Random (randomInts)
 
+import Control.Monad.State
+
 data Dice = Dice { value :: Int }
     deriving (Show)
 
@@ -20,6 +22,3 @@ initializeDices numDice = do
 possibleRotations :: Dice -> [Int]
 possibleRotations (Dice currentValue) =
     filter (\x -> x < currentValue && x + currentValue /= 7) [1..6]
-    
--- rotateDice :: Int -> ()
--- rotateDice newValue = value <- newValue

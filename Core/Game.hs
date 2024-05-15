@@ -5,7 +5,7 @@ import Core.Players.Player (Player(..), PlayerType(..))
 import Core.Players.HumanPlayer (HumanPlayer(..))
 import Core.Players.BotPlayer (BotPlayer(..), BotLevel(..))
 import Core.UI (initializingDices, initializingHumanPlayer, initializingBotPlayer, getPlayerMove)
-import Lib.Printer (printStateCurrent, printChosenMove)
+import Lib.Printer (printStateCurrent, printChosenMove, printDiceConfiguration)
 
 -- import System.Random
 import Control.Monad (replicateM)
@@ -26,26 +26,55 @@ newGameState humanPlayer botPlayer dices nextPlayer = GameState
     , nextPlayer = nextPlayer
     }
 
-updateGameState :: GameState -> [Dice] -> GameState
-updateGameState gameState newDices = gameState { dices = newDices }
+updateNextPlayerGameState :: GameState -> PlayerType-> GameState
+updateNextPlayerGameState gameState playerType = gameState { nextPlayer = playerType }
 
 isGameOver :: GameState -> Bool
 isGameOver gameState = null (dices gameState)
 
 -- type GameMonad a = StateT GameState IO a
 
+updateDiceAtIndex :: Int -> Int -> [Dice] -> [Dice]
+updateDiceAtIndex _ _ [] = []  -- Caso base: lista vazia
+updateDiceAtIndex index newValue (dice:dices)
+    | index < 1 = dice:dices  -- Se o índice for menor que 1, retornar a lista original
+    | index == 1 = (Dice newValue):dices  -- Atualizar o dado no índice 1
+    | otherwise = dice : updateDiceAtIndex (index - 1) newValue dices
+
+removeDiceAtIndex :: Int -> [Dice] -> [Dice]
+removeDiceAtIndex _ [] = []  -- Se a lista estiver vazia, retorna uma lista vazia
+removeDiceAtIndex index (dice:dices)
+    | index < 1 = dice:dices  -- Se o índice for menor que 1, retorna a lista original
+    | index == 1 = dices  -- Se o índice for 1, remove o primeiro dado da lista
+    | otherwise = dice : removeDiceAtIndex (index - 1) dices
+
 playGame :: GameState -> IO ()
 playGame gameState = do
     if (nextPlayer gameState) == Human
                                 then do
                                       printStateCurrent (playerName (humanPlayer gameState)) (dices gameState)
-                                      (choice, index, action) <- getPlayerMove (dices gameState)
+                                      (choice, index, value) <- getPlayerMove (dices gameState)
                                       case choice of
                                           1 -> do
                                               let chosenDice = dices gameState !! (index - 1)
-                                              printChosenMove (humanName (humanPlayer gameState)) chosenDice index action
-                                          2 -> putStrLn $ "Jogador escolheu retirar o dado " ++ show index
-                                else printStateCurrent (playerName (botPlayer gameState)) (dices gameState)
+                                              printChosenMove (humanName (humanPlayer gameState)) chosenDice index value
+
+                                              let updatedDiceList = updateDiceAtIndex index value (dices gameState)
+
+                                              let actualizedState = newGameState (humanPlayer gameState) (botPlayer gameState) updatedDiceList Bot
+                                              
+                                              printStateCurrent (playerName (botPlayer actualizedState)) (dices actualizedState)
+                                              
+                                              playGame actualizedState
+                                          2 -> do
+                                              putStrLn $ "Jogador escolheu retirar o dado " ++ show index
+                                              let updatedDiceList = removeDiceAtIndex index (dices gameState)
+                                              let actualizedState = newGameState (humanPlayer gameState) (botPlayer gameState) updatedDiceList Bot
+                                              
+                                              printStateCurrent (playerName (botPlayer actualizedState)) (dices actualizedState)
+                                              
+                                              playGame actualizedState
+                                else print("Vez do bot")
 
 initializingGame :: IO ()
 initializingGame = do

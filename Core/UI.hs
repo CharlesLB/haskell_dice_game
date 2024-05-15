@@ -45,7 +45,6 @@ possibleDicesToRotations :: [Dice] -> [(Int, Int)]
 possibleDicesToRotations diceList =
     [(index, value dice) | (index, dice) <- zip [1..] diceList, value dice /= 1]
 
-
 getPlayerMove :: [Dice] -> IO (Int, Int, Int)
 getPlayerMove diceList = do
     putStrLn "Escolha a jogada a ser feita:"
