@@ -10,8 +10,7 @@ displayBotLevels :: IO ()
 displayBotLevels = do
   putStrLn "Escolha o nível do bot:"
   putStrLn "1. Fácil"
-  putStrLn "2. Médio"
-  putStrLn "3. Difícil"
+  putStrLn "2. Difícil"
 
 getUserBotLevel :: IO BotLevel
 getUserBotLevel = do
@@ -20,10 +19,9 @@ getUserBotLevel = do
   choice <- getLine
   case map toLower choice of
     "1" -> return Easy
-    "2" -> return Medium
-    "3" -> return Hard
+    "2" -> return Hard
     _   -> do
-      putStrLn "Opção inválida. Por favor, escolha uma opção válida (1, 2 ou 3)."
+      putStrLn "Opção inválida. Por favor, escolha uma opção válida (1 ou 2)."
       getUserBotLevel
 
 displayPossibleRotations :: Dice -> IO Int
