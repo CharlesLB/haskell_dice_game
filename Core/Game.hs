@@ -49,32 +49,23 @@ removeDiceAtIndex index (dice:dices)
     | otherwise = dice : removeDiceAtIndex (index - 1) dices
 
 playGame :: GameState -> IO ()
-playGame gameState = do
-    if (nextPlayer gameState) == Human
-                                then do
-                                      printStateCurrent (playerName (humanPlayer gameState)) (dices gameState)
-                                      (choice, index, value) <- getPlayerMove (dices gameState)
-                                      case choice of
-                                          1 -> do
-                                              let chosenDice = dices gameState !! (index - 1)
-                                              printChosenMove (humanName (humanPlayer gameState)) chosenDice index value
+playGame gameState
+    | nextPlayer gameState == Human = do
+        printStateCurrent (playerName (humanPlayer gameState)) (dices gameState)
+        (choice, index, value) <- getPlayerMove (dices gameState)
 
-                                              let updatedDiceList = updateDiceAtIndex index value (dices gameState)
+        let actualizedState = case choice of
+                1 -> let chosenDice = dices gameState !! (index - 1)
+                         updatedDiceList = updateDiceAtIndex index value (dices gameState)
+                     in gameState { dices = updatedDiceList, nextPlayer = Bot }
+                2 -> let updatedDiceList = removeDiceAtIndex index (dices gameState)
+                     in gameState { dices = updatedDiceList, nextPlayer = Bot }
 
-                                              let actualizedState = newGameState (humanPlayer gameState) (botPlayer gameState) updatedDiceList Bot
-                                              
-                                              printStateCurrent (playerName (botPlayer actualizedState)) (dices actualizedState)
-                                              
-                                              playGame actualizedState
-                                          2 -> do
-                                              putStrLn $ "Jogador escolheu retirar o dado " ++ show index
-                                              let updatedDiceList = removeDiceAtIndex index (dices gameState)
-                                              let actualizedState = newGameState (humanPlayer gameState) (botPlayer gameState) updatedDiceList Bot
-                                              
-                                              printStateCurrent (playerName (botPlayer actualizedState)) (dices actualizedState)
-                                              
-                                              playGame actualizedState
-                                else print("Vez do bot")
+        printStateCurrent (playerName (botPlayer actualizedState)) (dices actualizedState)
+        playGame actualizedState
+
+    | otherwise = do
+        putStrLn "Vez do bot"
 
 initializingGame :: IO ()
 initializingGame = do
@@ -82,7 +73,9 @@ initializingGame = do
   human <- initializingHumanPlayer
   bot <- initializingBotPlayer
 
-  let initialState = newGameState human bot dices Human
+  let initialState = case (botLevel bot) of
+                Easy -> newGameState human bot dices Human
+                Hard -> newGameState human bot dices Bot
   playGame initialState
 
   return ()  -- Conclui a ação IO ()

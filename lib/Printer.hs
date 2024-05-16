@@ -7,7 +7,6 @@ printStateCurrent :: String -> [Dice] -> IO ()
 printStateCurrent currentPlayer dices = do
     putStrLn "Estado atual do jogo:"
     putStrLn $ "Jogador atual: " ++ currentPlayer
-    putStrLn "Dados:"
     printDiceConfiguration (dices)
 
 printDice :: (Int, Dice) -> IO ()
@@ -15,7 +14,7 @@ printDice (index, dice) = putStrLn $ "Dado " ++ show index ++ ": " ++ show (valu
 
 printDiceConfiguration :: [Dice] -> IO ()
 printDiceConfiguration dices = do
-    putStrLn "Configuração dos Dados:"
+    putStrLn "Configuração Atual dos Dados:"
     mapM_ printDice (zip [1..] dices)
 
 printChosenMove :: String -> Dice -> Int -> Int -> IO ()
