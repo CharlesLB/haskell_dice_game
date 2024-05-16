@@ -1,5 +1,7 @@
 module Core.Players.BotPlayer (BotPlayer(..), BotLevel(..), initializeBotPlayer) where
 
+import Core.Dice (Dice(..))
+
 data BotLevel = Easy | Hard
   deriving (Show, Eq)
 

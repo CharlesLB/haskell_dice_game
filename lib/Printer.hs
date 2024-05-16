@@ -16,9 +16,12 @@ printDiceConfiguration :: [Dice] -> IO ()
 printDiceConfiguration dices = do
     putStrLn "Configuração Atual dos Dados:"
     mapM_ printDice (zip [1..] dices)
+    putStrLn "\n"
 
-printChosenMove :: String -> Dice -> Int -> Int -> IO ()
-printChosenMove humanName chosenDice index action = do
-    putStrLn $ humanName ++ " escolheu girar o dado " ++ show index ++
-                                                        " de valor " ++ show (value chosenDice) ++
-                                                        " para " ++ show action
+printChosenMove :: Int -> String -> Dice -> Int -> Int -> IO ()
+printChosenMove choice name chosenDice index newValue = do
+    if choice == 1
+        then putStrLn $ name ++ " escolheu girar o dado " ++ show index ++
+                             " de valor " ++ show (value chosenDice) ++
+                             " para " ++ show newValue
+        else putStrLn $ name ++ " escolheu retirar o dado " ++ show index

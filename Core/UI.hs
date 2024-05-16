@@ -62,8 +62,8 @@ getPlayerMove diceList = do
             let dicesToRotations = possibleDicesToRotations diceList
             putStrLn "Possíveis rotações disponíveis:"
             mapM_ (\(i, option) -> putStrLn $ "Dado " ++ show i ++ ": " ++ show option) dicesToRotations
-            let numOptions = length dicesToRotations
-            putStrLn $ "Número de opções disponíveis para girar: " ++ show numOptions
+            -- let numDicesToRotations = length dicesToRotations
+            -- putStrLn $ "Número de opções disponíveis para girar: " ++ show numDicesToRotations
             putStrLn "Escolha o dado para girar:"
             index <- readLn
             if any (\(i, option) -> i == index) dicesToRotations
