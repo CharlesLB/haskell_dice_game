@@ -5,6 +5,7 @@ import Core.Players.Player (Player(..), PlayerType(..))
 import Core.Players.HumanPlayer (HumanPlayer(..), initializeHumanPlayer) 
 import Core.Players.BotPlayer (BotPlayer(..), BotPlayer(..), initializeBotPlayer)
 import Lib.Reader (getUserBotLevel, displayPossibleRotations) 
+import Lib.Printer (printDiceConfiguration)
 
 import Control.Monad.State
 
@@ -13,7 +14,7 @@ initializingDices = do
   putStrLn "Quantos dados deseja jogar? "
   numDice <- readLn
   dices <- initializeDices numDice
-  putStrLn $ "Configuração inicial dos dados: " ++ show dices
+  printDiceConfiguration dices
 
   return dices 
 
