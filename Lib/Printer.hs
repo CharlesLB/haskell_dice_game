@@ -1,8 +1,12 @@
 module Lib.Printer (printStateCurrent, printDiceConfiguration, printChosenMove, displayBotLevels) where
 
+import Core.Board.Board (Board)
 import Core.Board.Dice (Dice (..))
+import Types.Move (Move (RemoveMove, UpdateMove))
 
-printStateCurrent :: String -> [Dice] -> IO ()
+type PlayerName = String
+
+printStateCurrent :: String -> Board -> IO ()
 printStateCurrent currentPlayer board = do
   putStrLn "Estado atual do jogo:"
   putStrLn $ "Jogador atual: " ++ currentPlayer
@@ -11,25 +15,17 @@ printStateCurrent currentPlayer board = do
 printDice :: (Int, Dice) -> IO ()
 printDice (index, dice) = putStrLn $ "Dado " ++ show index ++ ": " ++ show (value dice)
 
-printDiceConfiguration :: [Dice] -> IO ()
+printDiceConfiguration :: Board -> IO ()
 printDiceConfiguration board = do
   putStrLn "Configuração Atual dos Dados:"
-  mapM_ printDice (zip [1 ..] board)
+  mapM_ printDice (zip [0 ..] board)
   putStrLn "\n"
 
-printChosenMove :: Int -> String -> Dice -> Int -> Int -> IO ()
-printChosenMove choice name chosenDice index newValue = do
-  if choice == 1
-    then
-      putStrLn $
-        name
-          ++ " escolheu girar o dado "
-          ++ show index
-          ++ " de valor "
-          ++ show (value chosenDice)
-          ++ " para "
-          ++ show newValue
-    else putStrLn $ name ++ " escolheu retirar o dado " ++ show index
+printChosenMove :: Move -> PlayerName -> Dice -> IO ()
+printChosenMove (UpdateMove index newValue) playerName chosenDice = do
+  putStrLn $ playerName ++ " escolheu girar o dado " ++ show index ++ " de valor " ++ show (value chosenDice) ++ " para " ++ show newValue
+printChosenMove (RemoveMove index) playerName dice = do
+  putStrLn $ playerName ++ " escolheu retirar o dado " ++ show index
 
 displayBotLevels :: IO ()
 displayBotLevels = do

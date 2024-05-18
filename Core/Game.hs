@@ -4,7 +4,7 @@
 module Core.Game (GameState (..), newGameState, playGame, initializingGame) where
 
 import Control.Monad (replicateM)
-import Core.Board.Board (Board (..), initializeBoard)
+import Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
 import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
 import Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
 import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
@@ -13,6 +13,7 @@ import Core.UI (getLevelBotPlayer, getNameHumanPlayer, getNumberOfDices, getPlay
 import Lib.Printer (printChosenMove, printDiceConfiguration, printStateCurrent)
 import System.Random (randomRIO)
 import Types.BotLevel (BotLevel (..))
+import Types.Move (Move (..))
 
 data GameState = GameState
   { players :: [Player],
@@ -29,19 +30,50 @@ newGameState player1 player2 board =
 
 playGame :: GameState -> IO ()
 playGame gameState = do
-  newGameState <- playRound (players gameState) gameState
-  playGame newGameState
+  if isGameOver (board gameState)
+    then do
+      putStrLn "Jogo acabou"
+      return ()
+    else do
+      newGameState <- playRound (players gameState) gameState
+      playGame newGameState
 
 playRound :: [Player] -> GameState -> IO GameState
 playRound [] gameState = return gameState
 playRound (p : ps) gameState = do
-  newGameState <- playMove p gameState
-  playRound ps newGameState
+  if isGameOver (board gameState)
+    then do
+      return gameState
+    else do
+      newGameState <- playMove p gameState
+      playRound ps newGameState
 
 playMove :: Player -> GameState -> IO GameState
 playMove player gameState = do
-  play player (board gameState)
-  return gameState
+  move <- play player (board gameState)
+
+  let actualizedState = case move of
+        UpdateMove {updateIndex = index, newValue = val} ->
+          let updatedBoard = updateDiceByIndex (board gameState) index (max val 0)
+           in gameState {board = updatedBoard}
+        RemoveMove {removeIndex = index} ->
+          let updatedBoard = removeDiceByIndex (board gameState) index
+           in gameState {board = updatedBoard}
+
+  let index = case move of
+        UpdateMove {updateIndex = index} -> index
+        RemoveMove {removeIndex = index} -> index
+
+  let chosenDice = board gameState !! index
+
+  printChosenMove move (playerName player) chosenDice
+  printStateCurrent (playerName player) (board actualizedState)
+
+  if isGameOver (board actualizedState)
+    then do
+      putStrLn $ playerName player ++ " venceu"
+      return actualizedState
+    else return actualizedState
 
 initializingGame :: IO ()
 initializingGame = do

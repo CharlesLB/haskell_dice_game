@@ -5,6 +5,7 @@ module Core.Board.Board (Board (..), initializeBoard, possibleDicesToRotations, 
 
 import Control.Monad (replicateM)
 import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
+import Types.Move (Index)
 
 type Board = [Dice]
 
@@ -13,22 +14,20 @@ initializeBoard numDice = replicateM numDice initializeDice
 
 possibleDicesToRemovals :: Board -> [(Int, Int)]
 possibleDicesToRemovals board =
-  [(index, value dice) | (index, dice) <- zip [1 ..] board, value dice == 1]
+  [(index, value dice) | (index, dice) <- zip [0 ..] board, value dice == 1]
 
 possibleDicesToRotations :: Board -> [(Int, Int)]
 possibleDicesToRotations board =
-  [(index, value dice) | (index, dice) <- zip [1 ..] board, value dice /= 1]
+  [(index, value dice) | (index, dice) <- zip [0 ..] board, value dice /= 1]
 
---  Criar um Tipo Move que é Int -> Int
-updateDiceByIndex :: Board -> Int -> Int -> Board
+updateDiceByIndex :: Board -> Index -> Int -> Board
 updateDiceByIndex [] _ _ = []
 updateDiceByIndex (dice : board) index newValue
   | index < 0 = dice : board
   | index == 0 = Dice newValue : board
   | otherwise = dice : updateDiceByIndex board (index - 1) newValue
 
--- Criar um Tipo Index que é Int
-removeDiceByIndex :: Board -> Int -> Board
+removeDiceByIndex :: Board -> Index -> Board
 removeDiceByIndex [] _ = []
 removeDiceByIndex (dice : board) index
   | index < 0 = dice : board

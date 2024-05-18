@@ -21,7 +21,7 @@ displayPossibleRotations :: Dice -> IO Int
 displayPossibleRotations chosenDice = do
   let rotations = possibleRotations chosenDice
   putStrLn "Possíveis rotações disponíveis:"
-  mapM_ (\(i, option) -> putStrLn $ "- Girar para o valor: " ++ show option) (zip [1 ..] rotations)
+  mapM_ (\(i, option) -> putStrLn $ "- Girar para o valor: " ++ show option) (zip [0 ..] rotations)
 
   putStrLn "Digite para qual valor o dado deve ser girado:"
   newValue <- readLn
