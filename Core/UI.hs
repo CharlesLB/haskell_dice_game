@@ -1,44 +1,36 @@
 module Core.UI (getNumberOfDices, getNameHumanPlayer, getLevelBoyPlayer, getPlayerMove) where
 
-import Control.Monad.State
-import Core.Dice (Dice (..))
-import Core.Board (Board (..), possibleDicesToRotations, possibleDicesToRemovals)
-import Core.Players.BotPlayer (BotLevel)
+import Control.Monad (when)
+import Core.Board.Board (Board (..), possibleDicesToRemovals, possibleDicesToRotations)
+import Core.Board.Dice (Dice (..))
 import Lib.Reader (displayPossibleRotations, getUserBotLevel)
+import Types.BotLevel (BotLevel)
 
 getNumberOfDices :: IO Int
 getNumberOfDices = do
   putStrLn "Quantos dados deseja jogar? "
-  numDice <- readLn
-  return numDice
+  readLn
 
 getNameHumanPlayer :: IO String
 getNameHumanPlayer = do
   putStrLn "Qual o nome do jogador? "
-  nameHumanPlayer <- getLine
-  return nameHumanPlayer
+  getLine
 
 getLevelBoyPlayer :: IO BotLevel
 getLevelBoyPlayer = do
-  levelBotPlayer <- getUserBotLevel
-  return levelBotPlayer
+  getUserBotLevel
 
 getPlayerMove :: Board -> IO (Int, Int, Int)
 getPlayerMove board = do
   putStrLn "Escolha a jogada a ser feita:"
 
-  if any (\dice -> value dice /= 1) board
-    then putStrLn "1. Girar"
-    else return ()
-
-  if any (\dice -> value dice == 1) board
-    then putStrLn "2. Retirar"
-    else return ()
+  when (any (\dice -> value dice /= 1) board) $ putStrLn "1. Girar"
+  when (any (\dice -> value dice == 1) board) $ putStrLn "2. Retirar"
 
   putStrLn "Digite o número correspondente à ação desejada:"
   choicePlayer <- readLn
   case choicePlayer of
-    1 -> 
+    1 ->
       if any (\dice -> value dice /= 1) board
         then do
           let dicesToRotations = possibleDicesToRotations board
@@ -67,7 +59,7 @@ getPlayerMove board = do
           putStrLn "Escolha o dado para girar:"
           index <- readLn
           if any (\(i, option) -> i == index) dicesToRemovals
-            then return (2, index, 0) -- Escolha 2 indica retirar
+            then return (2, index, 0)
             else do
               putStrLn "Índice inválido. Tente novamente."
               getPlayerMove board

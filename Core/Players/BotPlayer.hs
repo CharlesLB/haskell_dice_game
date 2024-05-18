@@ -1,9 +1,7 @@
 module Core.Players.BotPlayer (BotPlayer (..), BotLevel (..), initializeBotPlayer) where
 
-import Core.Dice (Dice (..))
-
-data BotLevel = Easy | Hard
-  deriving (Show, Eq)
+import Core.Board.Dice (Dice (..))
+import Types.BotLevel (BotLevel (..))
 
 data BotPlayer = BotPlayer
   { botName :: String,

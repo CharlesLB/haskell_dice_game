@@ -1,14 +1,12 @@
-module Core.Board (Board (..), initializeBoard, possibleDicesToRotations, possibleDicesToRemovals) where
+module Core.Board.Board (Board (..), initializeBoard, possibleDicesToRotations, possibleDicesToRemovals) where
 
-import Core.Dice (Dice (..), initializeDice, possibleRotations)
 import Control.Monad (replicateM)
+import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
 
 type Board = [Dice]
 
 initializeBoard :: Int -> IO Board
-initializeBoard numDice = do
-  board <- replicateM numDice initializeDice
-  return board
+initializeBoard numDice = replicateM numDice initializeDice
 
 possibleDicesToRemovals :: Board -> [(Int, Int)]
 possibleDicesToRemovals board =

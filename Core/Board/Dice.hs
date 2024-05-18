@@ -1,7 +1,9 @@
-module Core.Dice (Dice (..), initializeDice, possibleRotations) where
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-import Control.Monad.State
-import System.Random
+{-# HLINT ignore "Use newtype instead of data" #-}
+module Core.Board.Dice (Dice (..), initializeDice, possibleRotations) where
+
+import System.Random (randomRIO)
 
 data Dice = Dice {value :: Int}
   deriving (Show)
