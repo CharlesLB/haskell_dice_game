@@ -1,7 +1,7 @@
-module Core.Players.Player (Player(..), PlayerType(..)) where
+module Core.Players.Player (Player (..), PlayerType (..)) where
 
-import Core.Players.HumanPlayer (HumanPlayer(..))
-import Core.Players.BotPlayer (BotPlayer(..), BotLevel(..))
+import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..))
+import Core.Players.HumanPlayer (HumanPlayer (..))
 
 data PlayerType = Human | Bot
   deriving (Show, Eq)
@@ -9,7 +9,6 @@ data PlayerType = Human | Bot
 class Player a where
   playerName :: a -> String
   playerType :: a -> PlayerType
-  -- play :: a -> IO ()
 
 instance Player HumanPlayer where
   playerName :: HumanPlayer -> String
@@ -24,4 +23,3 @@ instance Player BotPlayer where
 
   playerType :: BotPlayer -> PlayerType
   playerType _ = Bot
-

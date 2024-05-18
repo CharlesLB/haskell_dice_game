@@ -1,4 +1,4 @@
-module Core.Players.HumanPlayer (HumanPlayer(..), initializeHumanPlayer) where
+module Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer) where
 
 data HumanPlayer = HumanPlayer
   { humanName :: String
@@ -7,5 +7,5 @@ data HumanPlayer = HumanPlayer
 
 initializeHumanPlayer :: String -> IO HumanPlayer
 initializeHumanPlayer nameHumanPlayer = do
-  let human = HumanPlayer { humanName = nameHumanPlayer }
+  let human = HumanPlayer {humanName = nameHumanPlayer}
   return human

@@ -1,11 +1,10 @@
-module Core.Dice (Dice(..), initializeDices, possibleRotations) where
-
-import Lib.Random (randomInts)
+module Core.Dice (Dice (..), initializeDices, possibleRotations) where
 
 import Control.Monad.State
+import Lib.Random (randomInts)
 
-data Dice = Dice { value :: Int }
-    deriving (Show)
+data Dice = Dice {value :: Int}
+  deriving (Show)
 
 randomDiceValues :: Int -> [Dice]
 randomDiceValues seed = map (\val -> Dice val) (randomInts seed)
@@ -16,10 +15,10 @@ randomDiceValues seed = map (\val -> Dice val) (randomInts seed)
 -- TODO: mudar para o initializeDICE e colocar no Game
 initializeDices :: Int -> IO [Dice]
 initializeDices numDice = do
-    let randomDiceList = randomDiceValues 42
-        selectedDiceList = take numDice randomDiceList
-    return selectedDiceList
+  let randomDiceList = randomDiceValues 42
+      selectedDiceList = take numDice randomDiceList
+  return selectedDiceList
 
 possibleRotations :: Dice -> [Int]
 possibleRotations (Dice currentValue) =
-    filter (\x -> x < currentValue && x + currentValue /= 7) [1..6]
+  filter (\x -> x < currentValue && x + currentValue /= 7) [1 .. 6]
