@@ -3,7 +3,8 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 module Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer, humanPlay) where
 
-import Data.Dynamic (Dynamic)
+import Core.Board.Board (Board)
+import Core.UI (getPlayerMove)
 
 data HumanPlayer = HumanPlayer
   { humanName :: String
@@ -13,5 +14,7 @@ data HumanPlayer = HumanPlayer
 initializeHumanPlayer :: String -> IO HumanPlayer
 initializeHumanPlayer nameHumanPlayer = return HumanPlayer {humanName = nameHumanPlayer}
 
-humanPlay :: HumanPlayer -> gameState -> IO ()
-humanPlay player gameState = print "Human"
+humanPlay :: HumanPlayer -> Board -> IO ()
+humanPlay player board = do
+  (choice, index, value) <- getPlayerMove board
+  print "po"

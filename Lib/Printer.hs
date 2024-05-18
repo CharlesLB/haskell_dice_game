@@ -1,7 +1,6 @@
 module Lib.Printer (printStateCurrent, printDiceConfiguration, printChosenMove, displayBotLevels) where
 
 import Core.Board.Dice (Dice (..))
-import Core.Players.Player (Player (..))
 
 printStateCurrent :: String -> [Dice] -> IO ()
 printStateCurrent currentPlayer board = do

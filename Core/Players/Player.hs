@@ -1,5 +1,6 @@
 module Core.Players.Player (Player (..), PlayerType (..), playerName, playerType, play, playerLevel) where
 
+import Core.Board.Board (Board)
 import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), botPlay)
 import Core.Players.HumanPlayer (HumanPlayer (..), humanPlay)
 
@@ -19,9 +20,9 @@ playerType :: Player -> PlayerType
 playerType (HumanPlayerType _) = Human
 playerType (BotPlayerType _) = Bot
 
-play :: Player -> gameState -> IO ()
-play (HumanPlayerType hp) gameState = humanPlay hp gameState
-play (BotPlayerType bp) gameState = botPlay bp gameState
+play :: Player -> Board -> IO ()
+play (HumanPlayerType hp) board = humanPlay hp board
+play (BotPlayerType bp) board = botPlay bp board
 
 playerLevel :: Player -> Maybe BotLevel
 playerLevel (BotPlayerType bp) = Just (botLevel bp)

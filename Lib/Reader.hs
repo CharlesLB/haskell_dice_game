@@ -1,9 +1,9 @@
 module Lib.Reader (getUserBotLevel, displayPossibleRotations) where
 
 import Core.Board.Dice (Dice (..), possibleRotations)
-import Core.Players.BotPlayer (BotLevel (..))
 import Data.Char (toLower)
 import Lib.Printer (displayBotLevels, printDiceConfiguration)
+import Types.BotLevel (BotLevel (..))
 
 getUserBotLevel :: IO BotLevel
 getUserBotLevel = do
