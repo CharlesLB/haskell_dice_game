@@ -38,17 +38,17 @@ isGameOver gameState = null (dices gameState)
 -- type GameMonad a = StateT GameState IO a
 
 updateDiceByIndex :: [Dice] -> Int -> Int -> [Dice]
-updateDiceByIndex [] _ _ = [] -- Caso base: lista vazia
+updateDiceByIndex [] _ _ = [] 
 updateDiceByIndex (dice : dices) index newValue
-  | index < 0 = dice : dices -- Se o índice for menor que 0, retornar a lista original
-  | index == 0 = (Dice newValue) : dices -- Atualizar o dado no índice 0
+  | index < 0 = dice : dices 
+  | index == 0 = (Dice newValue) : dices 
   | otherwise = dice : updateDiceByIndex dices (index - 1) newValue
 
 removeDiceByIndex :: [Dice] -> Int -> [Dice]
-removeDiceByIndex [] _ = [] -- Se a lista estiver vazia, retorna uma lista vazia
+removeDiceByIndex [] _ = [] 
 removeDiceByIndex (dice : dices) index
-  | index < 0 = dice : dices -- Se o índice for menor que 0, retorna a lista original
-  | index == 0 = dices -- Se o índice for 0, remove o primeiro dado da lista
+  | index < 0 = dice : dices 
+  | index == 0 = dices
   | otherwise = dice : removeDiceByIndex dices (index - 1)
 
 easyBotMove :: [Dice] -> IO (Int, Int, Int) --(choice, index, value)

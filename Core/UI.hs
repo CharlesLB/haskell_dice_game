@@ -42,11 +42,9 @@ getPlayerMove :: [Dice] -> IO (Int, Int, Int)
 getPlayerMove diceList = do
   putStrLn "Escolha a jogada a ser feita:"
 
-  -- TODO fazer verificação se posso girar o dado
   if any (\dice -> value dice /= 1) diceList
     then putStrLn "1. Girar"
     else return ()
-
 
   if any (\dice -> value dice == 1) diceList
     then putStrLn "2. Retirar"
