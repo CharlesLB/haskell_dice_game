@@ -1,21 +1,21 @@
-module Lib.Printer (printStateCurrent, printDiceConfiguration, printChosenMove) where
+module Lib.Printer (printStateCurrent, printDiceConfiguration, printChosenMove, displayBotLevels) where
 
 import Core.Dice (Dice (..))
 import Core.Players.Player (Player (..))
 
 printStateCurrent :: String -> [Dice] -> IO ()
-printStateCurrent currentPlayer dices = do
+printStateCurrent currentPlayer board = do
   putStrLn "Estado atual do jogo:"
   putStrLn $ "Jogador atual: " ++ currentPlayer
-  printDiceConfiguration (dices)
+  printDiceConfiguration (board)
 
 printDice :: (Int, Dice) -> IO ()
 printDice (index, dice) = putStrLn $ "Dado " ++ show index ++ ": " ++ show (value dice)
 
 printDiceConfiguration :: [Dice] -> IO ()
-printDiceConfiguration dices = do
+printDiceConfiguration board = do
   putStrLn "Configuração Atual dos Dados:"
-  mapM_ printDice (zip [1 ..] dices)
+  mapM_ printDice (zip [1 ..] board)
   putStrLn "\n"
 
 printChosenMove :: Int -> String -> Dice -> Int -> Int -> IO ()
@@ -29,3 +29,9 @@ printChosenMove choice name chosenDice index newValue = do
           ++ " para "
           ++ show newValue
     else putStrLn $ name ++ " escolheu retirar o dado " ++ show index
+
+displayBotLevels :: IO ()
+displayBotLevels = do
+  putStrLn "Escolha o nível do bot:"
+  putStrLn "1. Fácil"
+  putStrLn "2. Difícil"

@@ -2,10 +2,8 @@ module Core.UI (getNumberOfDices, getNameHumanPlayer, getLevelBoyPlayer, getPlay
 
 import Control.Monad.State
 import Core.Dice (Dice (..))
+import Core.Board (Board (..), possibleDicesToRotations, possibleDicesToRemovals)
 import Core.Players.BotPlayer (BotLevel)
-import Core.Players.HumanPlayer (HumanPlayer (..))
-import Core.Players.Player (Player (..), PlayerType (..))
-import Lib.Printer (printDiceConfiguration)
 import Lib.Reader (displayPossibleRotations, getUserBotLevel)
 
 getNumberOfDices :: IO Int
@@ -25,28 +23,15 @@ getLevelBoyPlayer = do
   levelBotPlayer <- getUserBotLevel
   return levelBotPlayer
 
--- TODO mover lógica do jogo para o Game
-possibleDicesToRemovals :: [Dice] -> [(Int, Int)]
-possibleDicesToRemovals diceList =
-  [(index, value dice) | (index, dice) <- zip [1 ..] diceList, value dice == 1]
-
--- showPossibleDiceToRemoval :: [Dice] -> IO ()
--- showPossibleDiceToRemoval dices = putStrLn
-
--- TODO mover lógica do jogo para o Game
-possibleDicesToRotations :: [Dice] -> [(Int, Int)]
-possibleDicesToRotations diceList =
-  [(index, value dice) | (index, dice) <- zip [1 ..] diceList, value dice /= 1]
-
-getPlayerMove :: [Dice] -> IO (Int, Int, Int)
-getPlayerMove diceList = do
+getPlayerMove :: Board -> IO (Int, Int, Int)
+getPlayerMove board = do
   putStrLn "Escolha a jogada a ser feita:"
 
-  if any (\dice -> value dice /= 1) diceList
+  if any (\dice -> value dice /= 1) board
     then putStrLn "1. Girar"
     else return ()
 
-  if any (\dice -> value dice == 1) diceList
+  if any (\dice -> value dice == 1) board
     then putStrLn "2. Retirar"
     else return ()
 
@@ -54,29 +39,29 @@ getPlayerMove diceList = do
   choicePlayer <- readLn
   case choicePlayer of
     1 -> 
-      if any (\dice -> value dice /= 1) diceList
+      if any (\dice -> value dice /= 1) board
         then do
-          let dicesToRotations = possibleDicesToRotations diceList
+          let dicesToRotations = possibleDicesToRotations board
           putStrLn "Possíveis rotações disponíveis:"
           mapM_ (\(i, option) -> putStrLn $ "Dado " ++ show i ++ ": " ++ show option) dicesToRotations
           putStrLn "Escolha o dado para girar:"
           index <- readLn
           if any (\(i, option) -> i == index) dicesToRotations
             then do
-              let chosenDice = diceList !! (index - 1)
+              let chosenDice = board !! (index - 1)
               putStrLn $ "Dado escolhido: " ++ show (value chosenDice)
               newValue <- displayPossibleRotations chosenDice
               return (1, index, newValue)
             else do
               putStrLn "Índice inválido. Tente novamente."
-              getPlayerMove diceList
+              getPlayerMove board
         else do
           putStrLn "Não há dados sem face 1 para girar."
-          getPlayerMove diceList
+          getPlayerMove board
     2 ->
-      if any (\dice -> value dice == 1) diceList
+      if any (\dice -> value dice == 1) board
         then do
-          let dicesToRemovals = possibleDicesToRemovals diceList
+          let dicesToRemovals = possibleDicesToRemovals board
           putStrLn "Possíveis remoções disponíveis:"
           mapM_ (\(i, option) -> putStrLn $ "Dado " ++ show i ++ ": " ++ show option) dicesToRemovals
           putStrLn "Escolha o dado para girar:"
@@ -85,10 +70,10 @@ getPlayerMove diceList = do
             then return (2, index, 0) -- Escolha 2 indica retirar
             else do
               putStrLn "Índice inválido. Tente novamente."
-              getPlayerMove diceList
+              getPlayerMove board
         else do
           putStrLn "Não há dados com face 1 para retirar."
-          getPlayerMove diceList
+          getPlayerMove board
     _ -> do
       putStrLn "Opção inválida. Tente novamente."
-      getPlayerMove diceList
+      getPlayerMove board

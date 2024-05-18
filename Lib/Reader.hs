@@ -3,13 +3,7 @@ module Lib.Reader (getUserBotLevel, displayPossibleRotations) where
 import Core.Dice (Dice (..), possibleRotations)
 import Core.Players.BotPlayer (BotLevel (..))
 import Data.Char (toLower)
-import Lib.Printer (printDiceConfiguration)
-
-displayBotLevels :: IO ()
-displayBotLevels = do
-  putStrLn "Escolha o nível do bot:"
-  putStrLn "1. Fácil"
-  putStrLn "2. Difícil"
+import Lib.Printer (printDiceConfiguration, displayBotLevels)
 
 getUserBotLevel :: IO BotLevel
 getUserBotLevel = do
