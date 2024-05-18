@@ -1,124 +1,103 @@
-module Core.Game (newGameState, playGame, initializingGame) where
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use foldM" #-}
+module Core.Game (GameState (..), newGameState, playGame, initializingGame) where
 
 import Control.Monad (replicateM)
-import Core.Dice (Dice (..), initializeDice, possibleRotations)
-import Core.Board (Board (..))
-import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), initializeBotPlayer)
+import Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
+import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
+import Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
 import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
-import Core.Players.Player (Player (..), PlayerType (..))
-import Core.UI (getPlayerMove, getLevelBoyPlayer, getNumberOfDices, getNameHumanPlayer)
+import Core.Players.Player (Player (..), PlayerType (..), play, playerLevel, playerName, playerType)
+import Core.UI (getLevelBotPlayer, getNameHumanPlayer, getNumberOfDices, getPlayerMove)
 import Lib.Printer (printChosenMove, printDiceConfiguration, printStateCurrent)
-import System.Random
+import System.Random (randomRIO)
+import Types.BotLevel (BotLevel (..))
+import Types.Move (Move (..))
 
 data GameState = GameState
-  { humanPlayer :: HumanPlayer,
-    botPlayer :: BotPlayer,
-    board :: Board,
-    nextPlayer :: PlayerType
+  { players :: [Player],
+    board :: Board
   }
   deriving (Show)
 
-initializeDices :: Int -> IO Board
-initializeDices numDice = replicateM numDice initializeDice
-
-newGameState :: HumanPlayer -> BotPlayer -> Board -> PlayerType -> GameState
-newGameState humanPlayer botPlayer board nextPlayer =
+newGameState :: Player -> Player -> Board -> GameState
+newGameState player1 player2 board =
   GameState
-    { humanPlayer = humanPlayer,
-      botPlayer = botPlayer,
-      board = board,
-      nextPlayer = nextPlayer
+    { players = [player1, player2],
+      board = board
     }
 
-isGameOver :: GameState -> Bool
-isGameOver gameState = null (board gameState)
-
-updateDiceByIndex :: Board -> Int -> Int -> Board
-updateDiceByIndex [] _ _ = [] 
-updateDiceByIndex (dice : board) index newValue
-  | index < 0 = dice : board 
-  | index == 0 = (Dice newValue) : board 
-  | otherwise = dice : updateDiceByIndex board (index - 1) newValue
-
-removeDiceByIndex :: Board -> Int -> Board
-removeDiceByIndex [] _ = [] 
-removeDiceByIndex (dice : board) index
-  | index < 0 = dice : board 
-  | index == 0 = board
-  | otherwise = dice : removeDiceByIndex board (index - 1)
-
-easyBotMove :: Board -> IO (Int, Int, Int) --(choice, index, value)
-easyBotMove board = do
-  let numDices = length board
-  randomIndex <- (randomRIO :: (Int, Int) -> IO Int) (0, numDices - 1)
-  let chosenDice = board !! randomIndex
-  if ((value chosenDice) /= 1)
-    then do
-      let rotations = possibleRotations chosenDice
-      let n = length rotations
-      indexDicesToRotation <- randomRIO (0, n - 1) 
-      let newValue = (rotations !! indexDicesToRotation)
-      return (1, randomIndex, newValue)
-    else do
-      return (2, randomIndex, 0)
-
 playGame :: GameState -> IO ()
-playGame gameState
-  | nextPlayer gameState == Human = do
-    (choice, index, value) <- getPlayerMove (board gameState)
+playGame gameState = do
+  if isGameOver (board gameState)
+    then do
+      putStrLn "Jogo acabou"
+      return ()
+    else do
+      newGameState <- playRound (players gameState) gameState
+      playGame newGameState
 
-    let actualizedState = case choice of
-          1 ->
-            let updatedboard = updateDiceByIndex (board gameState) (index - 1) value
-             in gameState {board = updatedboard, nextPlayer = Bot}
-          2 ->
-            let updatedboard = removeDiceByIndex (board gameState) (index - 1)
-             in gameState {board = updatedboard, nextPlayer = Bot}
-    let chosenDice = board gameState !! (index - 1)
-    printChosenMove choice (playerName (humanPlayer actualizedState)) chosenDice index value
-    printStateCurrent (playerName (humanPlayer actualizedState)) (board actualizedState)
-    if isGameOver actualizedState
-      then putStrLn "Humano venceu"
-      else playGame actualizedState
-  | otherwise = do
-    (choice, index, value) <- easyBotMove (board gameState)
+playRound :: [Player] -> GameState -> IO GameState
+playRound [] gameState = return gameState
+playRound (p : ps) gameState = do
+  if isGameOver (board gameState)
+    then do
+      return gameState
+    else do
+      newGameState <- playMove p gameState
+      playRound ps newGameState
 
-    let actualizedState = case choice of
-          1 ->
-            let updatedboard = updateDiceByIndex (board gameState) index value
-             in gameState {board = updatedboard, nextPlayer = Human}
-          2 ->
-            let updatedboard = removeDiceByIndex (board gameState) index
-             in gameState {board = updatedboard, nextPlayer = Human}
+playMove :: Player -> GameState -> IO GameState
+playMove player gameState = do
+  move <- play player (board gameState)
 
-    let chosenDice = board gameState !! (index)
-    printChosenMove choice (playerName (botPlayer actualizedState)) chosenDice (index + 1) value
-    printStateCurrent (playerName (botPlayer actualizedState)) (board actualizedState)
+  let actualizedState = case move of
+        UpdateMove {updateIndex = index, newValue = val} ->
+          let updatedBoard = updateDiceByIndex (board gameState) index (max val 0)
+           in gameState {board = updatedBoard}
+        RemoveMove {removeIndex = index} ->
+          let updatedBoard = removeDiceByIndex (board gameState) index
+           in gameState {board = updatedBoard}
 
-    if isGameOver actualizedState
-      then putStrLn "Bot venceu"
-      else playGame actualizedState
+  let index = case move of
+        UpdateMove {updateIndex = index} -> index
+        RemoveMove {removeIndex = index} -> index
+
+  let chosenDice = board gameState !! index
+
+  printChosenMove move (playerName player) chosenDice
+  printStateCurrent (playerName player) (board actualizedState)
+
+  if isGameOver (board actualizedState)
+    then do
+      putStrLn $ playerName player ++ " venceu"
+      return actualizedState
+    else return actualizedState
 
 initializingGame :: IO ()
 initializingGame = do
   numDices <- getNumberOfDices
-  board <- initializeDices numDices
+  board <- initializeBoard numDices
   printDiceConfiguration board
 
   nameHumanPlayer <- getNameHumanPlayer
   human <- initializeHumanPlayer nameHumanPlayer
-  putStrLn $ "O nome do jogador do tipo " ++ show (playerType human) ++ " é: " ++ playerName human
+  let playerHuman = HumanPlayerType human
+  putStrLn $ "O nome do jogador do tipo " ++ show (playerType playerHuman) ++ " é: " ++ playerName playerHuman
 
-  levelBotPlayer <- getLevelBoyPlayer
+  levelBotPlayer <- getLevelBotPlayer
   let nameBot = "Bot" ++ show levelBotPlayer
-  
-  bot <- initializeBotPlayer nameBot levelBotPlayer
-  putStrLn $ "O nome do jogador do tipo " ++ show (playerType bot) ++ " é: " ++ playerName bot ++ ". Ele é do nivel " ++ show (botLevel bot)
 
-  let initialState = case (botLevel bot) of
-        Easy -> newGameState human bot board Human
-        Hard -> newGameState human bot board Bot
-  printStateCurrent (playerName (humanPlayer initialState)) (board)
+  bot <- initializeBotPlayer nameBot levelBotPlayer
+  let playerBot = BotPlayerType bot
+  putStrLn $ "O nome do jogador do tipo " ++ show (playerType playerBot) ++ " é: " ++ playerName playerBot ++ ". Ele é do nivel " ++ show (playerLevel playerBot)
+
+  let initialState = case botLevel bot of
+        Easy -> newGameState playerHuman playerBot board
+        Hard -> newGameState playerBot playerHuman board
+
+  printStateCurrent (playerName playerHuman) board
   playGame initialState
 
-  return () -- Conclui a ação IO ()
+  return ()
