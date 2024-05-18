@@ -3,11 +3,11 @@ module Core.Game (newGameState, playGame, initializingGame) where
 -- import System.Random
 import Control.Monad (replicateM)
 import Control.Monad.State
-import Core.Dice (Dice (..), possibleRotations)
-import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..))
-import Core.Players.HumanPlayer (HumanPlayer (..))
+import Core.Dice (Dice (..), initializeDices, possibleRotations)
+import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), initializeBotPlayer)
+import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
 import Core.Players.Player (Player (..), PlayerType (..))
-import Core.UI (getPlayerMove, initializingBotPlayer, initializingDices, initializingHumanPlayer)
+import Core.UI (getPlayerMove, getLevelBoyPlayer, getNumberOfDices, getNameHumanPlayer)
 import Lib.Printer (printChosenMove, printDiceConfiguration, printStateCurrent)
 import System.Random
 
@@ -85,7 +85,6 @@ playGame gameState
       then putStrLn "Humano venceu"
       else playGame actualizedState
   | otherwise = do
-    putStrLn "- Vez do bot"
     (choice, index, value) <- easyBotMove (dices gameState)
 
     let actualizedState = case choice of
@@ -106,9 +105,19 @@ playGame gameState
 
 initializingGame :: IO ()
 initializingGame = do
-  dices <- initializingDices
-  human <- initializingHumanPlayer
-  bot <- initializingBotPlayer
+  numDices <- getNumberOfDices
+  dices <- initializeDices numDices
+  printDiceConfiguration dices
+
+  nameHumanPlayer <- getNameHumanPlayer
+  human <- initializeHumanPlayer nameHumanPlayer
+  putStrLn $ "O nome do jogador do tipo " ++ show (playerType human) ++ " é: " ++ playerName human
+
+  levelBotPlayer <- getLevelBoyPlayer
+  let nameBot = "Bot" ++ show levelBotPlayer
+  
+  bot <- initializeBotPlayer nameBot levelBotPlayer
+  putStrLn $ "O nome do jogador do tipo " ++ show (playerType bot) ++ " é: " ++ playerName bot ++ ". Ele é do nivel " ++ show (botLevel bot)
 
   let initialState = case (botLevel bot) of
         Easy -> newGameState human bot dices Human
