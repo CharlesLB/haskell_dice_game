@@ -20,6 +20,7 @@ data GameState = GameState
     nextPlayer :: PlayerType
   } deriving (Show)
 
+-- TODO: Não alocar nova memória on update
 newGameState :: HumanPlayer -> BotPlayer -> [Dice] -> PlayerType -> GameState
 newGameState humanPlayer botPlayer dices nextPlayer = GameState
     { humanPlayer = humanPlayer
@@ -28,33 +29,33 @@ newGameState humanPlayer botPlayer dices nextPlayer = GameState
     , nextPlayer = nextPlayer
     }
 
-updateNextPlayerGameState :: GameState -> PlayerType-> GameState
-updateNextPlayerGameState gameState playerType = gameState { nextPlayer = playerType }
+-- updateNextPlayerGameState :: GameState -> PlayerType-> GameState
+-- updateNextPlayerGameState gameState playerType = gameState { nextPlayer = playerType }
 
 isGameOver :: GameState -> Bool
 isGameOver gameState = null (dices gameState)
 
 -- type GameMonad a = StateT GameState IO a
 
-updateDiceAtIndex :: Int -> Int -> [Dice] -> [Dice]
-updateDiceAtIndex _ _ [] = []  -- Caso base: lista vazia
-updateDiceAtIndex index newValue (dice:dices)
-    | index < 1 = dice:dices  -- Se o índice for menor que 1, retornar a lista original
-    | index == 1 = (Dice newValue):dices  -- Atualizar o dado no índice 1
-    | otherwise = dice : updateDiceAtIndex (index - 1) newValue dices
+updateDiceByIndex :: [Dice] -> Int -> Int -> [Dice]
+updateDiceByIndex [] _ _ = []  -- Caso base: lista vazia
+updateDiceByIndex (dice:dices) index newValue
+    | index < 0 = dice:dices  -- Se o índice for menor que 0, retornar a lista original
+    | index == 0 = (Dice newValue):dices  -- Atualizar o dado no índice 0
+    | otherwise = dice : updateDiceByIndex dices (index - 1) newValue
 
-removeDiceAtIndex :: Int -> [Dice] -> [Dice]
-removeDiceAtIndex _ [] = []  -- Se a lista estiver vazia, retorna uma lista vazia
-removeDiceAtIndex index (dice:dices)
-    | index < 1 = dice:dices  -- Se o índice for menor que 1, retorna a lista original
-    | index == 1 = dices  -- Se o índice for 1, remove o primeiro dado da lista
-    | otherwise = dice : removeDiceAtIndex (index - 1) dices
+removeDiceAtIndex :: [Dice] -> Int -> [Dice]
+removeDiceAtIndex [] _ = []  -- Se a lista estiver vazia, retorna uma lista vazia
+removeDiceAtIndex (dice:dices) index
+    | index < 0 = dice:dices  -- Se o índice for menor que 0, retorna a lista original
+    | index == 0 = dices  -- Se o índice for 0, remove o primeiro dado da lista
+    | otherwise = dice : removeDiceAtIndex dices (index - 1) 
 
 easyBotMove :: [Dice] -> IO (Int, Int, Int) --(choice, index, value)
 easyBotMove diceList = do
     let numDices = length diceList
     randomIndex <- (randomRIO :: (Int, Int) -> IO Int) (0, numDices - 1)
-    let chosenDice = diceList !! randomIndex
+    let chosenDice = diceList !! randomIndex 
     if ((value chosenDice) /= 1)
         then do
             let rotations = possibleRotations chosenDice
@@ -72,9 +73,9 @@ playGame gameState
         (choice, index, value) <- getPlayerMove (dices gameState)
 
         let actualizedState = case choice of
-                1 -> let updatedDiceList = updateDiceAtIndex index value (dices gameState)
+                1 -> let updatedDiceList = updateDiceByIndex (dices gameState) (index - 1) value
                      in gameState { dices = updatedDiceList, nextPlayer = Bot }
-                2 -> let updatedDiceList = removeDiceAtIndex index (dices gameState)
+                2 -> let updatedDiceList = removeDiceAtIndex (dices gameState) (index - 1) 
                      in gameState { dices = updatedDiceList, nextPlayer = Bot }
         let chosenDice = dices gameState !! (index - 1)
         printChosenMove choice (playerName (humanPlayer actualizedState)) chosenDice index value
@@ -88,9 +89,9 @@ playGame gameState
         (choice, index, value) <- easyBotMove (dices gameState)
 
         let actualizedState = case choice of
-                1 -> let updatedDiceList = updateDiceAtIndex (index + 1) value (dices gameState)
+                1 -> let updatedDiceList = updateDiceByIndex (dices gameState) index value 
                      in gameState { dices = updatedDiceList, nextPlayer = Human }
-                2 -> let updatedDiceList = removeDiceAtIndex (index + 1) (dices gameState)
+                2 -> let updatedDiceList = removeDiceAtIndex (dices gameState) index 
                      in gameState { dices = updatedDiceList, nextPlayer = Human }
 
         let chosenDice = dices gameState !! (index)
