@@ -13,6 +13,7 @@ randomDiceValues seed = map (\val -> Dice val) (randomInts seed)
 --COMO DEVERIA SER A INICIALIZAÇÃO CASO A IMPORTAÇÃO FUNCIONASSE:
 -- initializeDices :: Int -> IO Dices
 -- initializeDices numDice = replicateM numDice (randomRIO (1, 6))
+-- TODO: mudar para o initializeDICE e colocar no Game
 initializeDices :: Int -> IO [Dice]
 initializeDices numDice = do
     let randomDiceList = randomDiceValues 42

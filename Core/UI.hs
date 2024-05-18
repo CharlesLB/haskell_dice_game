@@ -13,6 +13,7 @@ initializingDices :: IO [Dice]
 initializingDices = do 
   putStrLn "Quantos dados deseja jogar? "
   numDice <- readLn
+--   Mover initializeDices para o game e renomear essa função para getNumberOfDices
   dices <- initializeDices numDice
   printDiceConfiguration dices
 
@@ -23,7 +24,7 @@ initializingHumanPlayer = do
   putStrLn "Qual o nome do jogador? "
   nameHumanPlayer <- getLine
   human <- initializeHumanPlayer nameHumanPlayer 
-
+--   Mover initializeHumanPlayer para o game e renomear essa função para getHumanData
   putStrLn $ "O nome do jogador do tipo " ++ show (playerType human) ++ " é: " ++ playerName human
   return human
 
@@ -32,16 +33,23 @@ initializingBotPlayer = do
   putStrLn "Qual o nome do bot? "
   nameBotPlayer <- getLine
   levelBotPlayer <- getUserBotLevel
+  --   Mover initializeBotPlayer para o game e renomear essa função para getBotData
   bot <- initializeBotPlayer nameBotPlayer levelBotPlayer
 
   putStrLn $ "O nome do jogador do tipo " ++ show (playerType bot) ++ " é: " ++ playerName bot ++ ". Ele é do nivel " ++ show (botLevel bot)
 
   return bot
 
+-- TODO mover lógica do jogo para o Game
 possibleDicesToRemovals :: [Dice] -> [(Int, Int)]
 possibleDicesToRemovals diceList =
     [(index, value dice) | (index, dice) <- zip [1..] diceList, value dice == 1]
 
+
+-- showPossibleDiceToRemoval :: [Dice] -> IO ()
+-- showPossibleDiceToRemoval dices = putStrLn 
+
+-- TODO mover lógica do jogo para o Game
 possibleDicesToRotations :: [Dice] -> [(Int, Int)]
 possibleDicesToRotations diceList =
     [(index, value dice) | (index, dice) <- zip [1..] diceList, value dice /= 1]
@@ -49,6 +57,8 @@ possibleDicesToRotations diceList =
 getPlayerMove :: [Dice] -> IO (Int, Int, Int)
 getPlayerMove diceList = do
     putStrLn "Escolha a jogada a ser feita:"
+
+    -- TODO fazer verificação se posso girar o dado
     putStrLn "1. Girar"
 
     if any (\dice -> value dice == 1) diceList

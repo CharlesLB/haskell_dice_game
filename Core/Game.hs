@@ -44,12 +44,12 @@ updateDiceByIndex (dice:dices) index newValue
     | index == 0 = (Dice newValue):dices  -- Atualizar o dado no índice 0
     | otherwise = dice : updateDiceByIndex dices (index - 1) newValue
 
-removeDiceAtIndex :: [Dice] -> Int -> [Dice]
-removeDiceAtIndex [] _ = []  -- Se a lista estiver vazia, retorna uma lista vazia
-removeDiceAtIndex (dice:dices) index
+removeDiceByIndex :: [Dice] -> Int -> [Dice]
+removeDiceByIndex [] _ = []  -- Se a lista estiver vazia, retorna uma lista vazia
+removeDiceByIndex (dice:dices) index
     | index < 0 = dice:dices  -- Se o índice for menor que 0, retorna a lista original
     | index == 0 = dices  -- Se o índice for 0, remove o primeiro dado da lista
-    | otherwise = dice : removeDiceAtIndex dices (index - 1) 
+    | otherwise = dice : removeDiceByIndex dices (index - 1) 
 
 easyBotMove :: [Dice] -> IO (Int, Int, Int) --(choice, index, value)
 easyBotMove diceList = do
@@ -75,7 +75,7 @@ playGame gameState
         let actualizedState = case choice of
                 1 -> let updatedDiceList = updateDiceByIndex (dices gameState) (index - 1) value
                      in gameState { dices = updatedDiceList, nextPlayer = Bot }
-                2 -> let updatedDiceList = removeDiceAtIndex (dices gameState) (index - 1) 
+                2 -> let updatedDiceList = removeDiceByIndex (dices gameState) (index - 1) 
                      in gameState { dices = updatedDiceList, nextPlayer = Bot }
         let chosenDice = dices gameState !! (index - 1)
         printChosenMove choice (playerName (humanPlayer actualizedState)) chosenDice index value
@@ -91,7 +91,7 @@ playGame gameState
         let actualizedState = case choice of
                 1 -> let updatedDiceList = updateDiceByIndex (dices gameState) index value 
                      in gameState { dices = updatedDiceList, nextPlayer = Human }
-                2 -> let updatedDiceList = removeDiceAtIndex (dices gameState) index 
+                2 -> let updatedDiceList = removeDiceByIndex (dices gameState) index 
                      in gameState { dices = updatedDiceList, nextPlayer = Human }
 
         let chosenDice = dices gameState !! (index)
