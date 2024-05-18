@@ -1,13 +1,13 @@
 const game = {
     players: [],
-    dices: [],
+    board: [],
     start: () => {},
     play: () => {}
 }
 
 const player = {
     name: '',
-    play: (dices) => {
+    play: (board) => {
         removeDice: (dice) => {},
         rollDice: () => {},
     },
