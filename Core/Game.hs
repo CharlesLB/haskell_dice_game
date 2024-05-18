@@ -3,7 +3,7 @@ module Core.Game (newGameState, playGame, initializingGame) where
 -- import System.Random
 import Control.Monad (replicateM)
 import Control.Monad.State
-import Core.Dice (Dice (..), initializeDices, possibleRotations)
+import Core.Dice (Dice (..), initializeDice, possibleRotations)
 import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), initializeBotPlayer)
 import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
 import Core.Players.Player (Player (..), PlayerType (..))
@@ -19,7 +19,9 @@ data GameState = GameState
   }
   deriving (Show)
 
--- TODO: Não alocar nova memória on update
+initializeDices :: Int -> IO [Dice]
+initializeDices numDice = replicateM numDice initializeDice
+
 newGameState :: HumanPlayer -> BotPlayer -> [Dice] -> PlayerType -> GameState
 newGameState humanPlayer botPlayer dices nextPlayer =
   GameState
@@ -34,8 +36,6 @@ newGameState humanPlayer botPlayer dices nextPlayer =
 
 isGameOver :: GameState -> Bool
 isGameOver gameState = null (dices gameState)
-
--- type GameMonad a = StateT GameState IO a
 
 updateDiceByIndex :: [Dice] -> Int -> Int -> [Dice]
 updateDiceByIndex [] _ _ = [] 
