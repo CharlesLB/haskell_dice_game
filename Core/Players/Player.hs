@@ -1,25 +1,28 @@
-module Core.Players.Player (Player (..), PlayerType (..)) where
+module Core.Players.Player (Player (..), PlayerType (..), playerName, playerType, play, playerLevel) where
 
-import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..))
-import Core.Players.HumanPlayer (HumanPlayer (..))
+import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), botPlay)
+import Core.Players.HumanPlayer (HumanPlayer (..), humanPlay)
 
 data PlayerType = Human | Bot
   deriving (Show, Eq)
 
-class Player a where
-  playerName :: a -> String
-  playerType :: a -> PlayerType
+data Player
+  = HumanPlayerType HumanPlayer
+  | BotPlayerType BotPlayer
+  deriving (Show)
 
-instance Player HumanPlayer where
-  playerName :: HumanPlayer -> String
-  playerName = humanName
+playerName :: Player -> String
+playerName (HumanPlayerType hp) = humanName hp
+playerName (BotPlayerType bp) = botName bp
 
-  playerType :: HumanPlayer -> PlayerType
-  playerType _ = Human
+playerType :: Player -> PlayerType
+playerType (HumanPlayerType _) = Human
+playerType (BotPlayerType _) = Bot
 
-instance Player BotPlayer where
-  playerName :: BotPlayer -> String
-  playerName = botName
+play :: Player -> gameState -> IO ()
+play (HumanPlayerType hp) gameState = humanPlay hp gameState
+play (BotPlayerType bp) gameState = botPlay bp gameState
 
-  playerType :: BotPlayer -> PlayerType
-  playerType _ = Bot
+playerLevel :: Player -> Maybe BotLevel
+playerLevel (BotPlayerType bp) = Just (botLevel bp)
+playerLevel _ = Nothing

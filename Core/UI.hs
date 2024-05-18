@@ -1,4 +1,4 @@
-module Core.UI (getNumberOfDices, getNameHumanPlayer, getLevelBoyPlayer, getPlayerMove) where
+module Core.UI (getNumberOfDices, getNameHumanPlayer, getLevelBotPlayer, getPlayerMove) where
 
 import Control.Monad (when)
 import Core.Board.Board (Board (..), possibleDicesToRemovals, possibleDicesToRotations)
@@ -16,8 +16,8 @@ getNameHumanPlayer = do
   putStrLn "Qual o nome do jogador? "
   getLine
 
-getLevelBoyPlayer :: IO BotLevel
-getLevelBoyPlayer = do
+getLevelBotPlayer :: IO BotLevel
+getLevelBotPlayer = do
   getUserBotLevel
 
 getPlayerMove :: Board -> IO (Int, Int, Int)
