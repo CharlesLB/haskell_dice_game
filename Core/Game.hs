@@ -3,16 +3,12 @@
 {-# HLINT ignore "Use foldM" #-}
 module Core.Game (game) where
 
-import Control.Monad (replicateM)
 import Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
-import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
 import Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
 import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
 import Core.Players.Player (Player (..), PlayerType (..), play, playerLevel, playerName, playerType)
-import Core.UI (getPlayerMove, getSetupData)
-import Lib.Printer (printBoard, printChosenMove, printStateCurrent)
-import Lib.Reader (readBotLevel)
-import System.Random (randomRIO)
+import Core.UI (getSetupData)
+import Lib.Printer (printChosenMove, printStateCurrent)
 import Types.BotLevel (BotLevel (..))
 import Types.Move (Move (..))
 import Types.SetupData (SetupData (..))
@@ -52,6 +48,7 @@ playRound (p : ps) gameState = do
 
 playMove :: Player -> GameState -> IO GameState
 playMove player gameState = do
+  printStateCurrent (playerName player) (board gameState)
   move <- play player (board gameState)
 
   let actualizedState = case move of
@@ -69,7 +66,6 @@ playMove player gameState = do
   let chosenDice = board gameState !! index
 
   printChosenMove move (playerName player) chosenDice
-  printStateCurrent (playerName player) (board actualizedState)
 
   if isGameOver (board actualizedState)
     then do
@@ -93,7 +89,6 @@ buildGame setupData = do
         Easy -> newGameState playerHuman playerBot board
         Hard -> newGameState playerBot playerHuman board
 
-  printStateCurrent (playerName playerHuman) board
   return initialState
 
 game :: IO ()

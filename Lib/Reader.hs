@@ -45,8 +45,6 @@ readBotLevel = do
 readMoveType :: Board -> IO MoveType
 readMoveType board = do
   let possibleMoveTypes = [Update | any (\dice -> value dice /= 1) board] ++ [Remove | any (\dice -> value dice == 1) board]
-  putStrLn "Escolha a jogada a ser feita:"
-
   printMoveTypes possibleMoveTypes
 
   putStrLn "Qual jogada deseja fazer:"
@@ -81,7 +79,7 @@ readNewDiceValue dice = do
   printPossibleRotationsOfDice rotations
 
   putStrLn "Digite para qual valor o dado deve ser girado:"
-  newValue <- readLn
+  newValue <- readInt (Just 1) (Just 6)
   if newValue `elem` rotations
     then return newValue
     else do

@@ -3,6 +3,7 @@ module Core.UI (getPlayerMove, getSetupData) where
 import Control.Monad (when)
 import Core.Board.Board (Board (..), getPossibleDicesToRemove, getPossibleDicesToRotate)
 import Core.Board.Dice (Dice (..), possibleRotations)
+import Lib.Printer (printDice)
 import Lib.Reader (readBotLevel, readDiceByList, readInt, readMoveType, readNewDiceValue, readString)
 import Types.BotLevel (BotLevel)
 import Types.Move (Move (..), MoveType (Remove, Update))
@@ -32,13 +33,14 @@ getPlayerMove board = do
   case moveType of
     Update -> do
       let dicesToRotate = getPossibleDicesToRotate board
-      diceToRotateIndex <- readDiceByList dicesToRotate "Escolha o dado para girar:"
+      diceToRotateIndex <- readDiceByList dicesToRotate "Escolha um dado para girar:"
       let chosenDice = board !! diceToRotateIndex
-      putStrLn $ "Dado escolhido: " ++ show (value chosenDice)
+      putStrLn "Dado escolhido: "
+      printDice (diceToRotateIndex, chosenDice)
       newValue <- readNewDiceValue chosenDice
       return (UpdateMove {updateIndex = diceToRotateIndex, newValue = newValue})
     Remove ->
       do
         let dicesToRemovals = getPossibleDicesToRemove board
-        diceToRemoveIndex <- readDiceByList dicesToRemovals "Escolha o dado para remover:"
+        diceToRemoveIndex <- readDiceByList dicesToRemovals "Escolha um dado para remover:"
         return (RemoveMove {removeIndex = diceToRemoveIndex})

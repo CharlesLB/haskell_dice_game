@@ -1,35 +1,34 @@
-module Lib.Printer (printStateCurrent, printBoard, printChosenMove, printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice) where
+module Lib.Printer (printStateCurrent, printBoard, printChosenMove, printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice, printDice) where
 
 import Control.Monad (when)
 import Core.Board.Board (Board (..))
 import Core.Board.Dice (Dice (..))
-import Types.Move (Move (RemoveMove, UpdateMove), MoveType (Remove, Update))
+import Types.Move (Index, Move (RemoveMove, UpdateMove), MoveType (Remove, Update))
 
 type PlayerName = String
 
 printStateCurrent :: String -> Board -> IO ()
 printStateCurrent currentPlayer board = do
-  putStrLn "Sua vez:"
-  putStrLn $ "Jogador atual: " ++ currentPlayer
+  putStrLn $ "\n\n Jogador atual: " ++ currentPlayer
   printBoard board
 
 printBoard :: Board -> IO ()
 printBoard board = do
   putStrLn "Configuração Atual dos Dados:"
-  mapM_ printDice (zip [1 ..] board)
+  mapM_ printDice (zip [0 ..] board)
   putStrLn "\n"
 
-printDicesByValues :: [(Int, Int)] -> IO ()
+printDicesByValues :: [(Index, Int)] -> IO ()
 printDicesByValues dices = do
   putStrLn "Dados disponíveis:"
   mapM_ printDiceByValue dices
   where
-    printDiceByValue :: (Int, Int) -> IO ()
+    printDiceByValue :: (Index, Int) -> IO ()
     printDiceByValue (index, value) = printDice (index, Dice value)
 
-printDice :: (Int, Dice) -> IO ()
+printDice :: (Index, Dice) -> IO ()
 printDice (index, dice) = do
-  putStr $ show index ++ ") "
+  putStr $ show (index + 1) ++ ") "
   printDiceImg (value dice)
   where
     printDiceImg :: Int -> IO ()
@@ -45,9 +44,9 @@ printDice (index, dice) = do
 
 printChosenMove :: Move -> PlayerName -> Dice -> IO ()
 printChosenMove (UpdateMove index newValue) playerName chosenDice = do
-  putStrLn $ playerName ++ " escolheu girar o dado " ++ show index ++ " de valor " ++ show (value chosenDice) ++ " para " ++ show newValue
+  putStrLn $ playerName ++ " escolheu girar o dado " ++ show (index + 1) ++ " de valor " ++ show (value chosenDice) ++ " para " ++ show newValue
 printChosenMove (RemoveMove index) playerName dice = do
-  putStrLn $ playerName ++ " escolheu retirar o dado " ++ show index
+  putStrLn $ playerName ++ " escolheu retirar o dado " ++ show (index + 1)
 
 printBotLevels :: IO ()
 printBotLevels = do
