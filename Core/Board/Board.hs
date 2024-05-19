@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Eta reduce" #-}
-module Core.Board.Board (Board (..), initializeBoard, possibleDicesToRotations, possibleDicesToRemovals, updateDiceByIndex, removeDiceByIndex, isGameOver) where
+module Core.Board.Board (Board (..), initializeBoard, getPossibleDicesToRotate, getPossibleDicesToRemove, updateDiceByIndex, removeDiceByIndex, isGameOver) where
 
 import Control.Monad (replicateM)
-import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
+import Core.Board.Dice (Dice (..), initializeDice)
 import Types.Move (Index)
 
 type Board = [Dice]
@@ -12,12 +12,12 @@ type Board = [Dice]
 initializeBoard :: Int -> IO Board
 initializeBoard numDice = replicateM numDice initializeDice
 
-possibleDicesToRemovals :: Board -> [(Int, Int)]
-possibleDicesToRemovals board =
+getPossibleDicesToRemove :: Board -> [(Int, Int)]
+getPossibleDicesToRemove board =
   [(index, value dice) | (index, dice) <- zip [0 ..] board, value dice == 1]
 
-possibleDicesToRotations :: Board -> [(Int, Int)]
-possibleDicesToRotations board =
+getPossibleDicesToRotate :: Board -> [(Int, Int)]
+getPossibleDicesToRotate board =
   [(index, value dice) | (index, dice) <- zip [0 ..] board, value dice /= 1]
 
 updateDiceByIndex :: Board -> Index -> Int -> Board

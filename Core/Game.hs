@@ -1,19 +1,14 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+module Core.Game (game) where
 
-{-# HLINT ignore "Use foldM" #-}
-module Core.Game (GameState (..), newGameState, playGame, initializingGame) where
-
-import Control.Monad (replicateM)
 import Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
-import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
 import Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
 import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
 import Core.Players.Player (Player (..), PlayerType (..), play, playerLevel, playerName, playerType)
-import Core.UI (getLevelBotPlayer, getNameHumanPlayer, getNumberOfDices, getPlayerMove)
-import Lib.Printer (printChosenMove, printDiceConfiguration, printStateCurrent)
-import System.Random (randomRIO)
+import Core.UI (getSetupData)
+import Lib.Printer (printChosenMove, printStateCurrent)
 import Types.BotLevel (BotLevel (..))
 import Types.Move (Move (..))
+import Types.SetupData (SetupData (..))
 
 data GameState = GameState
   { players :: [Player],
@@ -50,6 +45,7 @@ playRound (p : ps) gameState = do
 
 playMove :: Player -> GameState -> IO GameState
 playMove player gameState = do
+  printStateCurrent (playerName player) (board gameState)
   move <- play player (board gameState)
 
   let actualizedState = case move of
@@ -67,7 +63,6 @@ playMove player gameState = do
   let chosenDice = board gameState !! index
 
   printChosenMove move (playerName player) chosenDice
-  printStateCurrent (playerName player) (board actualizedState)
 
   if isGameOver (board actualizedState)
     then do
@@ -75,21 +70,15 @@ playMove player gameState = do
       return actualizedState
     else return actualizedState
 
-initializingGame :: IO ()
-initializingGame = do
-  numDices <- getNumberOfDices
-  board <- initializeBoard numDices
-  printDiceConfiguration board
+buildGame :: SetupData -> IO GameState
+buildGame setupData = do
+  board <- initializeBoard (numDices setupData)
 
-  nameHumanPlayer <- getNameHumanPlayer
-  human <- initializeHumanPlayer nameHumanPlayer
+  human <- initializeHumanPlayer (setupPlayerName setupData)
   let playerHuman = HumanPlayerType human
   putStrLn $ "O nome do jogador do tipo " ++ show (playerType playerHuman) ++ " é: " ++ playerName playerHuman
 
-  levelBotPlayer <- getLevelBotPlayer
-  let nameBot = "Bot" ++ show levelBotPlayer
-
-  bot <- initializeBotPlayer nameBot levelBotPlayer
+  bot <- initializeBotPlayer "Bot" (setupBotLevel setupData)
   let playerBot = BotPlayerType bot
   putStrLn $ "O nome do jogador do tipo " ++ show (playerType playerBot) ++ " é: " ++ playerName playerBot ++ ". Ele é do nivel " ++ show (playerLevel playerBot)
 
@@ -97,7 +86,10 @@ initializingGame = do
         Easy -> newGameState playerHuman playerBot board
         Hard -> newGameState playerBot playerHuman board
 
-  printStateCurrent (playerName playerHuman) board
-  playGame initialState
+  return initialState
 
-  return ()
+game :: IO ()
+game = do
+  gameSetup <- getSetupData
+  game <- buildGame gameSetup
+  playGame game
