@@ -1,4 +1,4 @@
-module Core.Players.BotPlayer (BotPlayer (..), BotLevel (..), initializeBotPlayer, botPlay) where
+module Core.Players.BotPlayer (BotPlayer (..), BotLevel (..), initializeBotPlayer, botPlay, hardBotMove) where
 
 import Core.Board.Board (Board)
 import Core.Board.Dice (Dice (..), possibleRotations)
@@ -74,3 +74,20 @@ hardBotMove board = do
     updateBoard :: Board -> Int -> Int -> Board
     updateBoard board index newValue =
       take index board ++ [Dice {value = newValue}] ++ drop (index + 1) board
+
+
+
+-- [N]
+2 -> 1 random
+5 -> 4 3 1 random
+3 -> 2 must 
+
+-- [N,N]
+2 5 -> aletorio
+1 6 -> aleatorio
+1 2 -> 1 1 
+1 1 -> 1
+6 1 -> 6
+
+-- [N,N,N]
+2 5 2 -> aleatorio
