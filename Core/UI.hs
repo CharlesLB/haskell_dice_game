@@ -1,74 +1,44 @@
-module Core.UI (getNumberOfDices, getNameHumanPlayer, getLevelBotPlayer, getPlayerMove) where
+module Core.UI (getPlayerMove, getSetupData) where
 
 import Control.Monad (when)
-import Core.Board.Board (Board (..), possibleDicesToRemovals, possibleDicesToRotations)
-import Core.Board.Dice (Dice (..))
-import Lib.Reader (displayPossibleRotations, getUserBotLevel)
+import Core.Board.Board (Board (..), getPossibleDicesToRemove, getPossibleDicesToRotate)
+import Core.Board.Dice (Dice (..), possibleRotations)
+import Lib.Reader (readBotLevel, readDiceByList, readInt, readMoveType, readNewDiceValue, readString)
 import Types.BotLevel (BotLevel)
-import Types.Move (Move (..))
+import Types.Move (Move (..), MoveType (Remove, Update))
+import Types.SetupData (SetupData (..))
 
-getNumberOfDices :: IO Int
-getNumberOfDices = do
-  putStrLn "Quantos dados deseja jogar? "
-  readLn
+getSetupData :: IO SetupData
+getSetupData = do
+  numDices <- getNumberOfDices
+  playerName <- getNameHumanPlayer
+  botLevel <- readBotLevel
+  return (SetupData {numDices = numDices, setupPlayerName = playerName, setupBotLevel = botLevel})
+  where
+    getNumberOfDices :: IO Int
+    getNumberOfDices = do
+      putStrLn "Quantos dados deseja jogar? "
+      readInt (Just 1) Nothing
 
-getNameHumanPlayer :: IO String
-getNameHumanPlayer = do
-  putStrLn "Qual o nome do jogador? "
-  getLine
-
-getLevelBotPlayer :: IO BotLevel
-getLevelBotPlayer = do
-  getUserBotLevel
+    getNameHumanPlayer :: IO String
+    getNameHumanPlayer = do
+      putStrLn "Qual o nome do jogador? "
+      readString
 
 getPlayerMove :: Board -> IO Move
 getPlayerMove board = do
-  putStrLn "Escolha a jogada a ser feita:"
+  moveType <- readMoveType board
 
-  when (any (\dice -> value dice /= 1) board) $ putStrLn "1. Girar"
-  when (any (\dice -> value dice == 1) board) $ putStrLn "2. Retirar"
-
-  putStrLn "Digite o número correspondente à ação desejada:"
-
-  -- Criar uma função no Reader para ler uma escolha de um conjunto de opções do TypeMove
-  choicePlayer <- readLn
-  case choicePlayer of
-    1 ->
-      if any (\dice -> value dice /= 1) board
-        then do
-          let dicesToRotations = possibleDicesToRotations board
-          putStrLn "Possíveis rotações disponíveis:"
-          mapM_ (\(i, option) -> putStrLn $ show i ++ ") " ++ show option) dicesToRotations
-          putStrLn "Escolha o dado para girar:"
-          index <- readLn
-          if any (\(i, option) -> i == index) dicesToRotations
-            then do
-              let chosenDice = board !! index
-              putStrLn $ "Dado escolhido: " ++ show (value chosenDice)
-              newValue <- displayPossibleRotations chosenDice
-              return (UpdateMove {updateIndex = index, newValue = newValue})
-            else do
-              putStrLn "Índice inválido. Tente novamente."
-              getPlayerMove board
-        else do
-          putStrLn "Não há dados sem face 1 para girar."
-          getPlayerMove board
-    2 ->
-      if any (\dice -> value dice == 1) board
-        then do
-          let dicesToRemovals = possibleDicesToRemovals board
-          putStrLn "Possíveis remoções disponíveis:"
-          mapM_ (\(i, option) -> putStrLn $ show i ++ ") " ++ show option) dicesToRemovals
-          putStrLn "Escolha o dado para girar:"
-          index <- readLn
-          if any (\(i, option) -> i == index) dicesToRemovals
-            then return (RemoveMove {removeIndex = index})
-            else do
-              putStrLn "Índice inválido. Tente novamente."
-              getPlayerMove board
-        else do
-          putStrLn "Não há dados com face 1 para retirar."
-          getPlayerMove board
-    _ -> do
-      putStrLn "Opção inválida. Tente novamente."
-      getPlayerMove board
+  case moveType of
+    Update -> do
+      let dicesToRotate = getPossibleDicesToRotate board
+      diceToRotateIndex <- readDiceByList dicesToRotate "Escolha o dado para girar:"
+      let chosenDice = board !! diceToRotateIndex
+      putStrLn $ "Dado escolhido: " ++ show (value chosenDice)
+      newValue <- readNewDiceValue chosenDice
+      return (UpdateMove {updateIndex = diceToRotateIndex, newValue = newValue})
+    Remove ->
+      do
+        let dicesToRemovals = getPossibleDicesToRemove board
+        diceToRemoveIndex <- readDiceByList dicesToRemovals "Escolha o dado para remover:"
+        return (RemoveMove {removeIndex = diceToRemoveIndex})
