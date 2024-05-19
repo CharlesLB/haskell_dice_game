@@ -31,8 +31,7 @@ easyBotMove board = do
   if value chosenDice /= 1
     then do
       let rotations = possibleRotations chosenDice
-      let n = length rotations
-      indexDicesToRotation <- randomRIO (0, n - 1)
+      indexDicesToRotation <- randomRIO (0, length rotations - 1)
       let newValue = rotations !! indexDicesToRotation
       return (UpdateMove {updateIndex = randomIndex, newValue = newValue})
     else do
