@@ -4,7 +4,7 @@
 module Core.Board.Board (Board (..), initializeBoard, getPossibleDicesToRotate, getPossibleDicesToRemove, updateDiceByIndex, removeDiceByIndex, isGameOver) where
 
 import Control.Monad (replicateM)
-import Core.Board.Dice (Dice (..), initializeDice, possibleRotations)
+import Core.Board.Dice (Dice (..), initializeDice)
 import Types.Move (Index)
 
 type Board = [Dice]

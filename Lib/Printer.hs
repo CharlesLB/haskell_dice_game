@@ -1,9 +1,9 @@
-module Lib.Printer (printStateCurrent, printBoard, printChosenMove, printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice, printDice) where
+module Lib.Printer (printStateCurrent, printChosenMove, printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice, printDice) where
 
 import Control.Monad (when)
 import Core.Board.Board (Board (..))
 import Core.Board.Dice (Dice (..))
-import Types.Move (Index, Move (RemoveMove, UpdateMove), MoveType (Remove, Update))
+import Types.Move (Index, Move (..), MoveType (..))
 
 type PlayerName = String
 

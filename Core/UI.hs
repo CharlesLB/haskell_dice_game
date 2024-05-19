@@ -1,12 +1,10 @@
 module Core.UI (getPlayerMove, getSetupData) where
 
-import Control.Monad (when)
 import Core.Board.Board (Board (..), getPossibleDicesToRemove, getPossibleDicesToRotate)
-import Core.Board.Dice (Dice (..), possibleRotations)
+import Core.Board.Dice (Dice (..))
 import Lib.Printer (printDice)
 import Lib.Reader (readBotLevel, readDiceByList, readInt, readMoveType, readNewDiceValue, readString)
-import Types.BotLevel (BotLevel)
-import Types.Move (Move (..), MoveType (Remove, Update))
+import Types.Move (Move (..), MoveType (..))
 import Types.SetupData (SetupData (..))
 
 getSetupData :: IO SetupData
