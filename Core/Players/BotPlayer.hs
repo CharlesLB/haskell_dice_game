@@ -75,19 +75,26 @@ hardBotMove board = do
     updateBoard board index newValue =
       take index board ++ [Dice {value = newValue}] ++ drop (index + 1) board
 
+-- Lógica dos dados
+-- -- [N]
+-- 2 -> 1 random
+-- 5 -> 4 3 1 random
+-- 3 -> 2 must
 
+-- -- [N,N]
+-- 2 5 -> aletorio
+-- 1 6 -> aleatorio
+-- 1 2 -> 1 1
+-- 1 1 -> 1
+-- 6 1 -> 6
 
--- [N]
-2 -> 1 random
-5 -> 4 3 1 random
-3 -> 2 must 
+-- -- [N,N,N]
+-- 2 5 2 -> aleatorio
+-- 2 5 2 5 2 5 3 -> 3 -> 2
 
--- [N,N]
-2 5 -> aletorio
-1 6 -> aleatorio
-1 2 -> 1 1 
-1 1 -> 1
-6 1 -> 6
+-- 6 3 4 ->  6 3 -> 5 3 -> 6 2 -> 3 3
 
--- [N,N,N]
-2 5 2 -> aleatorio
+-- 3 3 6
+
+-- 3 6 -> 5 3 -> 6 2 -> 3 3
+-- 3 6 -> 5 3 -> 6 2 -> 3 3
