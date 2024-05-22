@@ -1,6 +1,6 @@
-module Main where
+module Source.Main where
 
-import Core.Game (game)
+import Source.Core.Game (game)
 
 main :: IO ()
 main = do

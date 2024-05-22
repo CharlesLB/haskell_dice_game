@@ -1,9 +1,9 @@
-module Core.Players.Player (Player (..), PlayerType (..), playerName, playerType, play, playerLevel) where
+module Source.Core.Players.Player (Player (..), PlayerType (..), playerName, playerType, play, playerLevel) where
 
-import Core.Board.Board (Board)
-import Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), botPlay)
-import Core.Players.HumanPlayer (HumanPlayer (..), humanPlay)
-import Types.Move (Move)
+import Source.Core.Board.Board (Board)
+import Source.Core.Players.BotPlayer (BotLevel (..), BotPlayer (..), botPlay)
+import Source.Core.Players.HumanPlayer (HumanPlayer (..), humanPlay)
+import Source.Types.Move (Move)
 
 data PlayerType = Human | Bot
   deriving (Show, Eq)

@@ -1,12 +1,12 @@
-module Lib.Reader (readInt, readMoveType, readBotLevel, readIndex, readString, readDiceByList, readNewDiceValue) where
+module Source.Lib.Reader (readInt, readMoveType, readBotLevel, readIndex, readString, readDiceByList, readNewDiceValue) where
 
-import Core.Board.Board (Board)
-import Core.Board.Dice (Dice (..), possibleRotations)
+import Source.Core.Board.Board (Board)
+import Source.Core.Board.Dice (Dice (..), possibleRotations)
 import Data.Char (toLower)
-import Lib.Printer (printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice)
+import Source.Lib.Printer (printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice)
 import Text.Read (readMaybe)
-import Types.BotLevel (BotLevel (..))
-import Types.Move (MoveType (..))
+import Source.Types.BotLevel (BotLevel (..))
+import Source.Types.Move (MoveType (..))
 
 readInt :: Maybe Int -> Maybe Int -> IO Int
 readInt minBound maxBound = do

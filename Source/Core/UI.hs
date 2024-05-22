@@ -1,11 +1,11 @@
-module Core.UI (getPlayerMove, getSetupData) where
+module Source.Core.UI (getPlayerMove, getSetupData) where
 
-import Core.Board.Board (Board (..), getPossibleDicesToRemove, getPossibleDicesToRotate)
-import Core.Board.Dice (Dice (..))
-import Lib.Printer (printDice)
-import Lib.Reader (readBotLevel, readDiceByList, readInt, readMoveType, readNewDiceValue, readString)
-import Types.Move (Move (..), MoveType (..))
-import Types.SetupData (SetupData (..))
+import Source.Core.Board.Board (Board (..), getPossibleDicesToRemove, getPossibleDicesToRotate)
+import Source.Core.Board.Dice (Dice (..))
+import Source.Lib.Printer (printDice)
+import Source.Lib.Reader (readBotLevel, readDiceByList, readInt, readMoveType, readNewDiceValue, readString)
+import Source.Types.Move (Move (..), MoveType (..))
+import Source.Types.SetupData (SetupData (..))
 
 getSetupData :: IO SetupData
 getSetupData = do

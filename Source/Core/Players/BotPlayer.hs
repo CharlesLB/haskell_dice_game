@@ -1,11 +1,11 @@
-module Core.Players.BotPlayer (BotPlayer (..), BotLevel (..), initializeBotPlayer, botPlay, hardBotMove) where
+module Source.Core.Players.BotPlayer (BotPlayer (..), BotLevel (..), initializeBotPlayer, botPlay, hardBotMove) where
 
-import Core.Board.Board (Board)
-import Core.Board.Dice (Dice (..), possibleRotations)
+import Source.Core.Board.Board (Board)
+import Source.Core.Board.Dice (Dice (..), possibleRotations)
 import Data.List (delete)
 import System.Random (randomRIO)
-import Types.BotLevel (BotLevel (..))
-import Types.Move (Move (..))
+import Source.Types.BotLevel (BotLevel (..))
+import Source.Types.Move (Move (..))
 
 data BotPlayer = BotPlayer
   { botName :: String,

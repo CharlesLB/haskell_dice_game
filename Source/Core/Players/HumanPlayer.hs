@@ -2,11 +2,11 @@
 
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# HLINT ignore "Eta reduce" #-}
-module Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer, humanPlay) where
+module Source.Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer, humanPlay) where
 
-import Core.Board.Board (Board (..), removeDiceByIndex, updateDiceByIndex)
-import Core.UI (getPlayerMove)
-import Types.Move (Move)
+import Source.Core.Board.Board (Board (..), removeDiceByIndex, updateDiceByIndex)
+import Source.Core.UI (getPlayerMove)
+import Source.Types.Move (Move)
 
 data HumanPlayer = HumanPlayer
   { humanName :: String
