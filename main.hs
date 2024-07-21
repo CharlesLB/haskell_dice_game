@@ -1,4 +1,4 @@
-module Source.Main where
+module Main where
 
 import Source.Core.Game (game)
 

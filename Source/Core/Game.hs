@@ -1,11 +1,11 @@
 module Source.Core.Game (game) where
 
+import Control.Monad.State (StateT, evalStateT, get, liftIO, put)
 import Source.Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
 import Source.Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
 import Source.Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
 import Source.Core.Players.Player (Player (..), PlayerType (..), play, playerLevel, playerName, playerType)
 import Source.Core.UI (getSetupData)
-import Control.Monad.State (StateT, evalStateT, liftIO, get, put)
 import Source.Lib.Printer (printChosenMove, printStateCurrent)
 import Source.Types.BotLevel (BotLevel (..))
 import Source.Types.Move (Move (..))
