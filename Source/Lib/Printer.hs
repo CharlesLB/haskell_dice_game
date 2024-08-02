@@ -1,9 +1,9 @@
-module Lib.Printer (printStateCurrent, printChosenMove, printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice, printDice) where
+module Source.Lib.Printer (printStateCurrent, printChosenMove, printBotLevels, printDicesByValues, printMoveTypes, printPossibleRotationsOfDice, printDice) where
 
 import Control.Monad (when)
-import Core.Board.Board (Board (..))
-import Core.Board.Dice (Dice (..))
-import Types.Move (Index, Move (..), MoveType (..))
+import Source.Core.Board.Board (Board (..))
+import Source.Core.Board.Dice (Dice (..))
+import Source.Types.Move (Index, Move (..), MoveType (..))
 
 type PlayerName = String
 
@@ -34,12 +34,12 @@ printDice (index, dice) = do
     printDiceImg :: Int -> IO ()
     printDiceImg n = putStrLn $
       case n of
-        1 -> "_____\n  |     |\n  |  ●  |\n  |_____|\n"
-        2 -> "_____\n  |●    |\n  |     |\n  |____●|\n"
-        3 -> "_____\n  |●    |\n  |  ●  |\n  |____●|\n"
-        4 -> "_____\n  |●   ●|\n  |     |\n  |●___●|\n"
-        5 -> "_____\n  |●   ●|\n  |  ●  |\n  |●___●|\n"
-        6 -> "_____\n  |●   ●|\n  |●   ●|\n  |●___●|\n"
+        1 -> "_____\n  |     |\n  |  o  |\n  |_____|\n"
+        2 -> "_____\n  |o    |\n  |     |\n  |____o|\n"
+        3 -> "_____\n  |o    |\n  |  o  |\n  |____o|\n"
+        4 -> "_____\n  |o   o|\n  |     |\n  |o___o|\n"
+        5 -> "_____\n  |o   o|\n  |  o  |\n  |o___o|\n"
+        6 -> "_____\n  |o   o|\n  |o   o|\n  |o___o|\n"
         _ -> "Invalid dice face"
 
 printChosenMove :: Move -> PlayerName -> Dice -> IO ()

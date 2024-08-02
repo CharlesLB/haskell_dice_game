@@ -1,6 +1,6 @@
-module Types.SetupData where
+module Source.Types.SetupData where
 
-import Types.BotLevel (BotLevel)
+import Source.Types.BotLevel (BotLevel)
 
 data SetupData = SetupData
   { numDices :: Int,

@@ -1,4 +1,4 @@
-module Types.Move where
+module Source.Types.Move where
 
 type Index = Int
 

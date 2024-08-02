@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Use newtype instead of data" #-}
-module Core.Board.Dice (Dice (..), initializeDice, possibleRotations) where
+module Source.Core.Board.Dice (Dice (..), initializeDice, possibleRotations) where
 
 import System.Random (randomRIO)
 

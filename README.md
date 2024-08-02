@@ -5,15 +5,17 @@
 ```bash
 cabal update
 cabal install --lib random
+cabal install mtl
 ```
-:m + System.Random
 
 Depois realizar os passos acima, tive depois que digitar:
-:set -package mtl
 
 ```bash
 ghci
-:l Main.hs
+
+:m + System.Random
+:set -package mtl
+:l main.hs
 main
 
 :q
@@ -24,4 +26,3 @@ main
 ## TODO
 
 - [ ] Colocar nomes e matrículas em todos os arquivos
-- [ ] Coloca

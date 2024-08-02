@@ -1,20 +1,23 @@
-module Core.Game (game) where
+module Source.Core.Game (game) where
 
-import Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
-import Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
-import Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
-import Core.Players.Player (Player (..), PlayerType (..), play, playerLevel, playerName, playerType)
-import Core.UI (getSetupData)
-import Lib.Printer (printChosenMove, printStateCurrent)
-import Types.BotLevel (BotLevel (..))
-import Types.Move (Move (..))
-import Types.SetupData (SetupData (..))
+import Control.Monad.State (StateT, evalStateT, get, liftIO, put)
+import Source.Core.Board.Board (Board (..), initializeBoard, isGameOver, removeDiceByIndex, updateDiceByIndex)
+import Source.Core.Players.BotPlayer (BotPlayer (..), initializeBotPlayer)
+import Source.Core.Players.HumanPlayer (HumanPlayer (..), initializeHumanPlayer)
+import Source.Core.Players.Player (Player (..), PlayerType (..), play, playerLevel, playerName, playerType)
+import Source.Core.UI (getSetupData)
+import Source.Lib.Printer (printChosenMove, printStateCurrent)
+import Source.Types.BotLevel (BotLevel (..))
+import Source.Types.Move (Move (..))
+import Source.Types.SetupData (SetupData (..))
 
 data GameState = GameState
   { players :: [Player],
     board :: Board
   }
   deriving (Show)
+
+type GameMonad = StateT GameState IO
 
 newGameState :: Player -> Player -> Board -> GameState
 newGameState player1 player2 board =
@@ -23,32 +26,32 @@ newGameState player1 player2 board =
       board = board
     }
 
-playGame :: GameState -> IO ()
-playGame gameState = do
+playGame :: GameMonad ()
+playGame = do
+  gameState <- get
   if isGameOver (board gameState)
-    then do
-      putStrLn "Jogo acabou"
-      return ()
+    then liftIO $ putStrLn "Jogo acabou"
     else do
-      newGameState <- playRound (players gameState) gameState
-      playGame newGameState
+      playRound (players gameState)
+      playGame
 
-playRound :: [Player] -> GameState -> IO GameState
-playRound [] gameState = return gameState
-playRound (p : ps) gameState = do
+playRound :: [Player] -> GameMonad ()
+playRound [] = return ()
+playRound (p : ps) = do
+  gameState <- get
   if isGameOver (board gameState)
-    then do
-      return gameState
+    then return ()
     else do
-      newGameState <- playMove p gameState
-      playRound ps newGameState
+      playMove p
+      playRound ps
 
-playMove :: Player -> GameState -> IO GameState
-playMove player gameState = do
-  printStateCurrent (playerName player) (board gameState)
-  move <- play player (board gameState)
+playMove :: Player -> GameMonad ()
+playMove player = do
+  gameState <- get
+  liftIO $ printStateCurrent (playerName player) (board gameState)
+  move <- liftIO $ play player (board gameState)
 
-  let actualizedState = case move of
+  let updatedState = case move of
         UpdateMove {updateIndex = index, newValue = val} ->
           let updatedBoard = updateDiceByIndex (board gameState) index (max val 0)
            in gameState {board = updatedBoard}
@@ -62,13 +65,13 @@ playMove player gameState = do
 
   let chosenDice = board gameState !! index
 
-  printChosenMove move (playerName player) chosenDice
+  liftIO $ printChosenMove move (playerName player) chosenDice
 
-  if isGameOver (board actualizedState)
+  if isGameOver (board updatedState)
     then do
-      putStrLn $ playerName player ++ " venceu"
-      return actualizedState
-    else return actualizedState
+      liftIO $ putStrLn $ playerName player ++ " venceu"
+      put updatedState
+    else put updatedState
 
 buildGame :: SetupData -> IO GameState
 buildGame setupData = do
@@ -91,5 +94,5 @@ buildGame setupData = do
 game :: IO ()
 game = do
   gameSetup <- getSetupData
-  game <- buildGame gameSetup
-  playGame game
+  initialState <- buildGame gameSetup
+  evalStateT playGame initialState

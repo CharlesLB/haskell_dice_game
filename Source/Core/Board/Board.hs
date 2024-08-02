@@ -1,11 +1,11 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Eta reduce" #-}
-module Core.Board.Board (Board (..), initializeBoard, getPossibleDicesToRotate, getPossibleDicesToRemove, updateDiceByIndex, removeDiceByIndex, isGameOver) where
+module Source.Core.Board.Board (Board (..), initializeBoard, getPossibleDicesToRotate, getPossibleDicesToRemove, updateDiceByIndex, removeDiceByIndex, isGameOver) where
 
 import Control.Monad (replicateM)
-import Core.Board.Dice (Dice (..), initializeDice)
-import Types.Move (Index)
+import Source.Core.Board.Dice (Dice (..), initializeDice)
+import Source.Types.Move (Index)
 
 type Board = [Dice]
 
