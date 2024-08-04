@@ -10,6 +10,7 @@ testDiceBehavior :: [Int] -> [(Int, Maybe Int)] -> IO Bool
 testDiceBehavior diceValues possibleMoves = do
   let dices = map Dice diceValues
   move <- hardBotMove dices
+  print move
   return $ expectative move possibleMoves
 
 main :: IO ()
@@ -57,12 +58,7 @@ main = do
   result <- testDiceBehavior board1 possibleMoves1
   putStrLn $ "  Teste 1: " ++ show result
 
-  let possibleMoves2 = [(6, Just 2)]
-  let board2 = [2, 5, 2, 5, 2, 5, 3]
-  result2 <- testDiceBehavior board2 possibleMoves2
-  putStrLn $ "  Teste 2: " ++ show result2
-
-  let possibleMoves3 =
+  let possibleMoves2 =
         [ (0, Just 2),
           (0, Just 3),
           (0, Just 4),
@@ -77,5 +73,5 @@ main = do
           (2, Just 6)
         ]
   let board3 = [6, 3, 4]
-  result3 <- testDiceBehavior board3 possibleMoves3
-  putStrLn $ "  Teste 3: " ++ show result3
+  result3 <- testDiceBehavior board2 possibleMoves2
+  putStrLn $ "  Teste 2: " ++ show result2
