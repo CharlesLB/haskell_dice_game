@@ -1,4 +1,11 @@
-# Haskell Dice Game
+<h1 align="center">
+    <br><br>
+    <b> Haskell Dice Game </b> 
+</h1>
+
+<p align="center">
+  <img alt="Language" src="https://img.shields.io/badge/language-Haskell-brightgreen">
+</p>
 
 Este trabalho foi desenvolvido como parte da disciplina DCC019 - Linguagens de Programação - UFJF, ministrada pelo professor Leonardo Vieira dos Santos Reis .
 
