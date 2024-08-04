@@ -39,6 +39,10 @@ O projeto de jogo de dados em Haskell é estruturado em três módulos principai
   - `Player`: Representa jogadores humanos (`HumanPlayer`) e bots (`BotPlayer`).
 - **Módulo `Lib`**: Contém funções auxiliares `Printer` e `Reader`, responsáveis pela impressão e leitura de dados.
 
+![Módulos](./.github/flow.jpg)
+
+
+
 ### Estrutura de Diretórios
 
 ```plaintext
