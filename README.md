@@ -1,5 +1,4 @@
 <h1 align="center">
-    <br><br>
     <b> Haskell Dice Game </b> 
 </h1>
 
