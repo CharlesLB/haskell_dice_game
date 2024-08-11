@@ -8,7 +8,7 @@
 
 Este trabalho foi desenvolvido como parte da disciplina DCC019 - Linguagens de Programação - UFJF, ministrada pelo professor Leonardo Vieira dos Santos Reis .
 
-Este trabalho descreve a implementação de um jogo de raciocínio lógico denominado "Jogo dos Dados" utilizando a linguagem funcional Haskell. O jogo é composto por dois jogadores que alternam turnos para girar ou remover dados com base nas faces voltadas para cima. O vencedor é o jogador que retirar o último dado. A implementação contempla dois níveis de dificuldade para o computador: um nível fácil, com jogadas aleatórias, e um nível difícil, com jogadas otimizadas segundo uma estratégia vencedora.
+O projeto implementa um jogo de raciocínio lógico denominado "Jogo dos Dados" utilizando a linguagem funcional Haskell. O jogo é composto por dois jogadores que alternam turnos para girar ou remover dados com base nas faces voltadas para cima. O vencedor é o jogador que retirar o último dado. A implementação contempla dois níveis de dificuldade para o computador: um nível fácil, com jogadas aleatórias, e um nível difícil, com jogadas otimizadas segundo uma estratégia vencedora.
 
 
 ## Como rodar
